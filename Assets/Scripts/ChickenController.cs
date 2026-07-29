@@ -18,7 +18,7 @@ public class ChickenController : MonoBehaviour
    [SerializeField] LayerMask groundLayer;
    private bool isGrounded;
    
-    void Start()
+    void awake()
     {
         chickenSR = GetComponent<SpriteRenderer>();
         chickenRB = GetComponent<Rigidbody2D>();
@@ -26,12 +26,21 @@ public class ChickenController : MonoBehaviour
 
     void Update()
     {
+        
         ChickenMovement();
         isOnFloor = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, floorLayer);
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         if (isGrounded && Keyboard.current.spaceKey.isPressed)
         {
             chickenRB.linearVelocity = new Vector2(chickenRB.linearVelocity.x, jumpForce);
+        }
+        else if (isOnFloor)
+        {
+            chickenRB.gravityScale = 0;
+        }
+        else if(!isOnFloor)
+        {
+            chickenRB.gravityScale = 1;
         }
     }
 
@@ -46,6 +55,7 @@ public class ChickenController : MonoBehaviour
 
     private void ChickenMovement()
     {
+        //CanWalkUp();
         if(Keyboard.current.wKey.isPressed)
         {
             Move(0, 1);
@@ -94,11 +104,11 @@ public class ChickenController : MonoBehaviour
     }
     public void CanWalkUp()
     {
-        if (isOnFloor)
+        if (isOnFloor && !isGrounded)
         {
             chickenRB.gravityScale = 0;
         }
-        else
+        else 
         {
             chickenRB.gravityScale = 1;
         }
