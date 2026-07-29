@@ -9,12 +9,14 @@ public class ChickenController : MonoBehaviour
     [Header("Movement")]
    [SerializeField] int Step = 1;
    [SerializeField] int speed = 5;
+   [SerializeField] LayerMask floorLayer;
+   private bool isOnFloor;
    [Header("Jump")]
    [SerializeField] private float jumpForce = 7f;
    [SerializeField] Transform groundCheck;
    [SerializeField] float groundCheckRadius =0.2f;
    [SerializeField] LayerMask groundLayer;
-   [SerializeField]private bool isGrounded;
+   private bool isGrounded;
    
     void Start()
     {
@@ -25,6 +27,7 @@ public class ChickenController : MonoBehaviour
     void Update()
     {
         ChickenMovement();
+        isOnFloor = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, floorLayer);
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         if (isGrounded && Keyboard.current.spaceKey.isPressed)
         {
@@ -67,7 +70,7 @@ public class ChickenController : MonoBehaviour
         {
             transform.Translate(0, 0, 0); 
         }
-        if (x == 0 && y != 0) 
+        if (x == 0 && y != 0 && isOnFloor) 
         {
             transform.Translate(0, y * Step * speed * Time.deltaTime , 0); 
         }
@@ -89,5 +92,15 @@ public class ChickenController : MonoBehaviour
             chickenSR.flipX = false;
         }
     }
-    
+    public void CanWalkUp()
+    {
+        if (isOnFloor)
+        {
+            chickenRB.gravityScale = 0;
+        }
+        else
+        {
+            chickenRB.gravityScale = 1;
+        }
+    }
 }
