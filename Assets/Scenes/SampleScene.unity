@@ -752,10 +752,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   target: {fileID: 1358571336}
   speed: 1
-  minX: 0
-  maxX: 0
-  minY: -11
-  maxY: 0
+  minX: -38.387
+  maxX: 38.403
+  minY: -10.8
+  maxY: 32.251
 --- !u!1 &600495830
 GameObject:
   m_ObjectHideFlags: 0
@@ -1467,13 +1467,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ChickenController
   Step: 1
   speed: 5
+  floorLayer:
+    serializedVersion: 2
+    m_Bits: 0
   jumpForce: 7
   groundCheck: {fileID: 820835065}
   groundCheckRadius: 0.2
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  isGrounded: 0
 --- !u!1 &1589613068
 GameObject:
   m_ObjectHideFlags: 0
