@@ -6,92 +6,345 @@ public class ChickenController : MonoBehaviour
     [Header("Chicken Components")]
     private SpriteRenderer chickenSR;
     private Rigidbody2D chickenRB;
+    private Animator anim;
+
     [Header("Movement")]
-   [SerializeField] int Step = 1;
-   [SerializeField] int speed = 5;
-   [SerializeField] LayerMask floorLayer;
-   private bool isOnFloor;
-   [Header("Jump")]
-   [SerializeField] private float jumpForce = 7f;
-   [SerializeField] Transform groundCheck;
-   [SerializeField] float groundCheckRadius =0.2f;
-   [SerializeField] LayerMask groundLayer;
-   private bool isGrounded;
-   
-    void awake()
+    [SerializeField] int Step = 1;
+    [SerializeField] int speed = 5;
+    [SerializeField] LayerMask floorLayer;
+    private bool isOnFloor;
+
+    [Header("Kinematic Borders")]
+    [SerializeField] bool useKinematicBorders = true;
+    [SerializeField] Vector2 minKinematicPosition = new Vector2(-38f, -10.7f);
+    [SerializeField] Vector2 maxKinematicPosition = new Vector2(38f, -2.7f);
+
+    [Header("Jump")]
+    [SerializeField] private float jumpForce = 7f;
+    [SerializeField] Transform groundCheck;
+    [SerializeField] float groundCheckRadius = 0.2f;
+    [SerializeField] LayerMask groundLayer;
+    private bool isGrounded;
+
+    private Collider2D chickenCollider;
+    private float startingGravityScale;
+    private Vector2 moveInput;
+    private bool jumpPressed;
+    private bool useGravityMode;
+    private bool isJumping;
+    private float jumpStartY;
+    private bool jumpAnimationLocked;
+    private int jumpAnimationStartFrame;
+
+    bool IsAnimationFinished(string animationName)
+    {
+        if (anim == null)
+        {
+            return true;
+        }
+
+        AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(0);
+        if (!info.IsName(animationName)) return true;
+        if (info.normalizedTime >0.95f) return true;
+        return false;
+    }
+
+    void Awake()
     {
         chickenSR = GetComponent<SpriteRenderer>();
         chickenRB = GetComponent<Rigidbody2D>();
+        chickenCollider = GetComponent<Collider2D>();
+        anim = GetComponent<Animator>();
+        startingGravityScale = chickenRB.gravityScale;
+        MoveKinematicOnFloor();
     }
 
     void Update()
     {
-        
-        ChickenMovement();
-        isOnFloor = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, floorLayer);
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-        if (isGrounded && Keyboard.current.spaceKey.isPressed)
+        ReadInput();
+        CheckFloor();
+
+        if (jumpPressed && CanJump())
         {
-            chickenRB.linearVelocity = new Vector2(chickenRB.linearVelocity.x, jumpForce);
+            Jump();
+            PlayJumpAnimation();
         }
-        else if (isOnFloor)
+
+        UpdateAnimation();
+    }
+
+    void FixedUpdate()
+    {
+        CheckFloor();
+
+        if (!isOnFloor)
         {
-            chickenRB.gravityScale = 0;
+            StartGravityMode();
         }
-        else if(!isOnFloor)
+
+        if (useGravityMode)
         {
-            chickenRB.gravityScale = 1;
+            MoveWithGravity();
         }
+        else
+        {
+            MoveKinematicOnFloor();
+        }
+
+        jumpPressed = false;
     }
 
     private void OnDrawGizmosSelected()
     {
-        if(groundCheck != null)
-            return;
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
-    }
-    
-
-    private void ChickenMovement()
-    {
-        //CanWalkUp();
-        if(Keyboard.current.wKey.isPressed)
+        if (groundCheck != null)
         {
-            Move(0, 1);
-        } 
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(GetGroundCheckPosition(), groundCheckRadius);
+        }
+
+        if (useKinematicBorders)
+        {
+            Vector2 min = GetMinBorder();
+            Vector2 max = GetMaxBorder();
+            Vector2 center = (min + max) * 0.5f;
+            Vector2 size = max - min;
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(center, size);
+        }
+    }
+
+    private void ReadInput()
+    {
+        moveInput = Vector2.zero;
+
+        if (Keyboard.current == null)
+        {
+            return;
+        }
+
+        if (Keyboard.current.wKey.isPressed)
+        {
+            moveInput.y += 1;
+        }
         if (Keyboard.current.aKey.isPressed)
         {
-            Move(-1, 0);
+            moveInput.x -= 1;
         }
         if (Keyboard.current.sKey.isPressed)
         {
-            Move(0, -1);
+            moveInput.y -= 1;
         }
         if (Keyboard.current.dKey.isPressed)
         {
-            Move(1, 0);
+            moveInput.x += 1;
         }
+
+        moveInput = Vector2.ClampMagnitude(moveInput, 1f);
+        jumpPressed = Keyboard.current.spaceKey.wasPressedThisFrame;
     }
 
-    public void Move(int x, int y)
+    private void CheckFloor()
     {
-        if (x == 0 && y == 0) 
+        isOnFloor = IsTouchingWalkableFloor();
+        isGrounded = IsTouchingSolidFloor();
+    }
+
+    private bool IsTouchingWalkableFloor()
+    {
+        if (chickenCollider == null)
         {
-            transform.Translate(0, 0, 0); 
+            return false;
         }
-        if (x == 0 && y != 0 && isOnFloor) 
+
+        LayerMask walkableLayer = floorLayer.value == 0 ? groundLayer : floorLayer;
+        Bounds bounds = chickenCollider.bounds;
+        Collider2D[] hits = Physics2D.OverlapBoxAll(bounds.center, bounds.size, 0f, walkableLayer);
+
+        foreach (Collider2D hit in hits)
         {
-            transform.Translate(0, y * Step * speed * Time.deltaTime , 0); 
+            if (hit != chickenCollider && hit.isTrigger)
+            {
+                return true;
+            }
         }
-        if (x != 0 && y == 0) 
+
+        return false;
+    }
+
+    private bool IsTouchingSolidFloor()
+    {
+        if (chickenCollider == null)
         {
-            FlipChicken(x);
-            transform.Translate(x * Step * speed * Time.deltaTime, 0 , 0);
+            return false;
+        }
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(GetGroundCheckPosition(), groundCheckRadius);
+        foreach (Collider2D hit in hits)
+        {
+            if (hit == chickenCollider || hit.isTrigger)
+            {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private Vector2 GetGroundCheckPosition()
+    {
+        if (chickenCollider != null)
+        {
+            Bounds bounds = chickenCollider.bounds;
+            return new Vector2(bounds.center.x, bounds.min.y - 0.02f);
+        }
+
+        return groundCheck.position;
+    }
+
+    private bool CanJump()
+    {
+        return isOnFloor || isGrounded;
+    }
+
+    private void Jump()
+    {
+        StartGravityMode();
+        isJumping = true;
+        jumpStartY = chickenRB.position.y;
+        chickenRB.linearVelocity = new Vector2(moveInput.x * speed, jumpForce);
+    }
+
+    private void MoveKinematicOnFloor()
+    {
+        chickenRB.bodyType = RigidbodyType2D.Kinematic;
+        chickenRB.gravityScale = 0f;
+        chickenRB.linearVelocity = Vector2.zero;
+
+        if (moveInput.x != 0)
+        {
+            FlipChicken(moveInput.x);
+        }
+
+        Vector2 movement = moveInput * Step * speed * Time.fixedDeltaTime;
+        Vector2 nextPosition = ClampToKinematicBorders(chickenRB.position + movement);
+        chickenRB.MovePosition(nextPosition);
+    }
+
+    private void MoveWithGravity()
+    {
+        chickenRB.bodyType = RigidbodyType2D.Dynamic;
+        chickenRB.gravityScale = startingGravityScale;
+
+        if (moveInput.x != 0)
+        {
+            FlipChicken(moveInput.x);
+        }
+
+        chickenRB.linearVelocity = new Vector2(moveInput.x * speed, chickenRB.linearVelocity.y);
+
+        bool landedFromJump = isJumping &&
+            isOnFloor &&
+            chickenRB.linearVelocity.y <= 0f &&
+            chickenRB.position.y <= jumpStartY;
+
+        bool landedAfterFalling = !isJumping &&
+            isOnFloor &&
+            chickenRB.linearVelocity.y <= 0.05f;
+
+        bool landedOnSolidFloor = isOnFloor &&
+            isGrounded &&
+            chickenRB.linearVelocity.y <= 0.05f;
+
+        if (landedFromJump || landedAfterFalling || landedOnSolidFloor)
+        {
+            isJumping = false;
+            useGravityMode = false;
+            chickenRB.linearVelocity = Vector2.zero;
         }
     }
 
-    public void FlipChicken(int x)
+    private void StartGravityMode()
+    {
+        useGravityMode = true;
+        chickenRB.bodyType = RigidbodyType2D.Dynamic;
+        chickenRB.gravityScale = startingGravityScale;
+    }
+
+    private Vector2 ClampToKinematicBorders(Vector2 position)
+    {
+        if (!useKinematicBorders)
+        {
+            return position;
+        }
+
+        Vector2 min = GetMinBorder();
+        Vector2 max = GetMaxBorder();
+
+        return new Vector2(
+            Mathf.Clamp(position.x, min.x, max.x),
+            Mathf.Clamp(position.y, min.y, max.y)
+        );
+    }
+
+    private Vector2 GetMinBorder()
+    {
+        return new Vector2(
+            Mathf.Min(minKinematicPosition.x, maxKinematicPosition.x),
+            Mathf.Min(minKinematicPosition.y, maxKinematicPosition.y)
+        );
+    }
+
+    private Vector2 GetMaxBorder()
+    {
+        return new Vector2(
+            Mathf.Max(minKinematicPosition.x, maxKinematicPosition.x),
+            Mathf.Max(minKinematicPosition.y, maxKinematicPosition.y)
+        );
+    }
+
+    private void UpdateAnimation()
+    {
+        if (anim == null)
+        {
+            return;
+        }
+
+        if (jumpAnimationLocked)
+        {
+            anim.SetBool("isWalking", false);
+
+            if (Time.frameCount > jumpAnimationStartFrame && IsAnimationFinished("JumpAnimation"))
+            {
+                jumpAnimationLocked = false;
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        anim.SetBool("isWalking", moveInput != Vector2.zero);
+    }
+
+    private void PlayJumpAnimation()
+    {
+        jumpAnimationLocked = true;
+        jumpAnimationStartFrame = Time.frameCount;
+        PlayAnimationFromStart("JumpAnimation");
+    }
+
+    private void PlayAnimationFromStart(string animationName)
+    {
+        if (anim != null)
+        {
+            anim.Play(animationName);
+        }
+    }
+
+    public void FlipChicken(float x)
     {
         if (x < 0)
         {
@@ -102,9 +355,10 @@ public class ChickenController : MonoBehaviour
             chickenSR.flipX = false;
         }
     }
+
     public void CanWalkUp()
     {
-        if (isOnFloor && !isGrounded)
+        if (isOnFloor && !isGrounded && !useGravityMode)
         {
             chickenRB.gravityScale = 0;
         }
