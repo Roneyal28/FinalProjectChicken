@@ -28,6 +28,11 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip takeDamage;
     public AudioClip takeDamage2;
     public AudioClip takeDamage3;
+    public AudioClip ratHit;
+    public AudioClip ratDeath;
+    
+    
+    
 
 
     [Header("SFX Volumes")]
@@ -49,6 +54,10 @@ public class SoundFXManager : MonoBehaviour
     [Range(0f, 1f)] public float takeDamageVolume = 1f;
     [Range(0f, 1f)] public float takeDamageVolume2 = 1f;
     [Range(0f, 1f)] public float takeDamageVolume3 = 1f;
+    [Range(0f, 1f)] public float ratHitVolume = 1f;
+    [Range(0f, 1f)] public float ratDeathVolume = 1f;
+
+
 
 
     private void Start()
@@ -81,11 +90,21 @@ public class SoundFXManager : MonoBehaviour
 
     public void PlaySFX(AudioClip clip)
     {
+        if (clip == null)
+        {
+            return;
+        }
+
         SFXSource.PlayOneShot(clip, GetSFXVolume(clip));
     }
 
     public void PlaySFX(AudioClip clip, float volume)
     {
+        if (clip == null)
+        {
+            return;
+        }
+
         SFXSource.PlayOneShot(clip, volume);
     }
 
@@ -98,7 +117,7 @@ public class SoundFXManager : MonoBehaviour
         if (clip == walkOnWood2) return walkOnWood2Volume;
         if (clip == eatFood) return eatFoodVolume;
         if (clip == wingAttack) return wingAttackVolume;
-        if (clip == wingAttack2) return wingAttackVolume;
+        if (clip == wingAttack2) return wingAttack2Volume;
         if (clip == obtainItem) return obtainItemVolume;
         if (clip == text) return textVolume;
         if (clip == cancel) return cancelVolume;
@@ -107,8 +126,11 @@ public class SoundFXManager : MonoBehaviour
         if (clip == gunShooting2) return gunShooting2Volume;
         if (clip == gunShooting3) return gunShooting3Volume;
         if (clip == takeDamage) return takeDamageVolume;
-        if (clip == takeDamage) return takeDamageVolume2;
-        if (clip == takeDamage) return takeDamageVolume3;
+        if (clip == takeDamage2) return takeDamageVolume2;
+        if (clip == takeDamage3) return takeDamageVolume3;
+        if (clip == ratHit) return ratHitVolume;
+        if (clip == ratDeath) return ratDeathVolume;
+       
         return 1f;
     }
 }

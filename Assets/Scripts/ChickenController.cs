@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,6 +12,8 @@ public class ChickenController : MonoBehaviour
     [Header("Movement")]
     [SerializeField] int Step = 1;
     [SerializeField] int speed = 5;
+    [SerializeField] private float acceleration = 12f;
+    [SerializeField] private float deceleration = 4f;
     [SerializeField] LayerMask floorLayer;
     private bool isOnFloor;
 
@@ -25,12 +28,24 @@ public class ChickenController : MonoBehaviour
     [SerializeField] float groundCheckRadius = 0.2f;
     [SerializeField] LayerMask groundLayer;
     private bool isGrounded;
+
+    [Header("Health")]
+    [SerializeField] private int maxHealth = 100;
+    [SerializeField] private int currentHealth;
+    [SerializeField] private HealthBar healthBar;
+
+    [Header("Attack")]
+    [SerializeField] private int attackDamage = 1;
+    [SerializeField] private float attackRange = 1.2f;
+    [SerializeField] private float attackHeight = 1.2f;
+    [SerializeField] private LayerMask enemyLayer;
     
     SoundFXManager SFXManager;
 
     private Collider2D chickenCollider;
     private float startingGravityScale;
     private Vector2 moveInput;
+    private Vector2 currentMoveVelocity;
     private bool jumpPressed;
     private bool attackPressed;
     private bool useGravityMode;
@@ -41,6 +56,9 @@ public class ChickenController : MonoBehaviour
     private bool attackAnimationLocked;
     private int attackAnimationStartFrame;
     private string isWalking = "isWalking";
+
+    public int CurrentHealth => currentHealth;
+    public int MaxHealth => maxHealth;
 
     bool IsAnimationFinished(string animationName)
     {
@@ -62,6 +80,20 @@ public class ChickenController : MonoBehaviour
         chickenCollider = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
         startingGravityScale = chickenRB.gravityScale;
+        currentHealth = maxHealth;
+        if (healthBar == null || !healthBar.HasBothSliders)
+        {
+            foreach (HealthBar foundHealthBar in FindObjectsOfType<HealthBar>())
+            {
+                if (foundHealthBar.HasBothSliders)
+                {
+                    healthBar = foundHealthBar;
+                    break;
+                }
+            }
+        }
+
+        SetupHealthBar();
         MoveKinematicOnFloor();
         SFXManager = FindObjectOfType<SoundFXManager>().GetComponent<SoundFXManager>();
     }
@@ -70,7 +102,11 @@ public class ChickenController : MonoBehaviour
     {
         ReadInput();
         CheckFloor();
-
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            currentHealth = Mathf.Clamp(currentHealth - 10, 0, maxHealth);
+            UpdateHealthBar();
+        }
         if (jumpPressed && CanJump())
         {
             Jump();
@@ -124,6 +160,9 @@ public class ChickenController : MonoBehaviour
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireCube(center, size);
         }
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(GetAttackCenter(), GetAttackSize());
     }
 
     private void ReadInput()
@@ -156,6 +195,12 @@ public class ChickenController : MonoBehaviour
         moveInput = Vector2.ClampMagnitude(moveInput, 1f);
         jumpPressed = Keyboard.current.spaceKey.wasPressedThisFrame;
         attackPressed = Keyboard.current.fKey.wasPressedThisFrame;
+
+        if (attackAnimationLocked)
+        {
+            moveInput = Vector2.zero;
+            jumpPressed = false;
+        }
     }
 
     private void CheckFloor()
@@ -228,7 +273,7 @@ public class ChickenController : MonoBehaviour
         StartGravityMode();
         isJumping = true;
         jumpStartY = chickenRB.position.y;
-        chickenRB.linearVelocity = new Vector2(moveInput.x * speed, jumpForce);
+        chickenRB.linearVelocity = new Vector2(currentMoveVelocity.x * Step * speed, jumpForce);
     }
 
     private void MoveKinematicOnFloor()
@@ -237,12 +282,14 @@ public class ChickenController : MonoBehaviour
         chickenRB.gravityScale = 0f;
         chickenRB.linearVelocity = Vector2.zero;
 
-        if (moveInput.x != 0)
+        UpdateSmoothedMovement();
+
+        if (currentMoveVelocity.x != 0)
         {
-            FlipChicken(moveInput.x);
+            FlipChicken(currentMoveVelocity.x);
         }
 
-        Vector2 movement = moveInput * Step * speed * Time.fixedDeltaTime;
+        Vector2 movement = currentMoveVelocity * Step * speed * Time.fixedDeltaTime;
         Vector2 nextPosition = ClampToKinematicBorders(chickenRB.position + movement);
         chickenRB.MovePosition(nextPosition);
     }
@@ -252,12 +299,14 @@ public class ChickenController : MonoBehaviour
         chickenRB.bodyType = RigidbodyType2D.Dynamic;
         chickenRB.gravityScale = startingGravityScale;
 
-        if (moveInput.x != 0)
+        UpdateSmoothedMovement();
+
+        if (currentMoveVelocity.x != 0)
         {
-            FlipChicken(moveInput.x);
+            FlipChicken(currentMoveVelocity.x);
         }
 
-        chickenRB.linearVelocity = new Vector2(moveInput.x * speed, chickenRB.linearVelocity.y);
+        chickenRB.linearVelocity = new Vector2(currentMoveVelocity.x * Step * speed, chickenRB.linearVelocity.y);
 
         bool landedFromJump = isJumping &&
             isOnFloor &&
@@ -278,6 +327,22 @@ public class ChickenController : MonoBehaviour
             useGravityMode = false;
             chickenRB.linearVelocity = Vector2.zero;
         }
+    }
+
+    private void UpdateSmoothedMovement()
+    {
+        if (attackAnimationLocked)
+        {
+            currentMoveVelocity = Vector2.zero;
+            return;
+        }
+
+        float smoothing = moveInput == Vector2.zero ? deceleration : acceleration;
+        currentMoveVelocity = Vector2.MoveTowards(
+            currentMoveVelocity,
+            moveInput,
+            smoothing * Time.fixedDeltaTime
+        );
     }
 
     private void StartGravityMode()
@@ -371,14 +436,27 @@ public class ChickenController : MonoBehaviour
     {
         attackAnimationLocked = true;
         attackAnimationStartFrame = Time.frameCount;
+        moveInput = Vector2.zero;
+        currentMoveVelocity = Vector2.zero;
+        chickenRB.linearVelocity = Vector2.zero;
         anim.SetBool(isWalking, false);
         PlayAnimationFromStart("AttackAnimation");
 
-        if (SFXManager.wingAttack != null)
+        if (SFXManager != null && SFXManager.wingAttack != null)
         {
             SFXManager.PlaySFX(SFXManager.wingAttack);
+        }
+
+        if (SFXManager != null && SFXManager.wingAttack2 != null)
+        {
             SFXManager.PlaySFX(SFXManager.wingAttack2);
         }
+
+    }
+
+    public void AttackHit()
+    {
+        DamageEnemiesInAttackRange();
     }
 
     private void PlayAnimationFromStart(string animationName)
@@ -387,6 +465,95 @@ public class ChickenController : MonoBehaviour
         {
             anim.Play(animationName);
         }
+    }
+
+    private void DamageEnemiesInAttackRange()
+    {
+        Collider2D[] hits = Physics2D.OverlapBoxAll(GetAttackCenter(), GetAttackSize(), 0f, GetEnemyLayerMask());
+        HashSet<EnemyBehavior> damagedEnemies = new HashSet<EnemyBehavior>();
+
+        foreach (Collider2D hit in hits)
+        {
+            EnemyBehavior enemy = hit.GetComponentInParent<EnemyBehavior>();
+
+            if (enemy != null && damagedEnemies.Add(enemy))
+            {
+                enemy.TakeDamage(attackDamage);
+            }
+        }
+    }
+
+    private Vector2 GetAttackCenter()
+    {
+        float facingDirection = chickenSR != null && chickenSR.flipX ? -1f : 1f;
+        Vector2 center = transform.position;
+
+        if (chickenCollider != null)
+        {
+            Bounds bounds = chickenCollider.bounds;
+            center = bounds.center;
+            center.x += facingDirection * (bounds.extents.x + attackRange * 0.5f);
+        }
+        else
+        {
+            center.x += facingDirection * attackRange;
+        }
+
+        return center;
+    }
+
+    private Vector2 GetAttackSize()
+    {
+        return new Vector2(attackRange, attackHeight);
+    }
+
+    private LayerMask GetEnemyLayerMask()
+    {
+        if (enemyLayer.value != 0)
+        {
+            return enemyLayer;
+        }
+
+        int enemyLayerIndex = LayerMask.NameToLayer("Enemy");
+        if (enemyLayerIndex >= 0)
+        {
+            return 1 << enemyLayerIndex;
+        }
+
+        return Physics2D.DefaultRaycastLayers;
+    }
+
+    public void TakeDamage(int damage)
+    {
+        currentHealth = Mathf.Clamp(currentHealth - damage, 0, maxHealth);
+        UpdateHealthBar();
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void UpdateHealthBar()
+    {
+        if (healthBar != null)
+        {
+            healthBar.SetHealth(currentHealth);
+        }
+    }
+
+    private void SetupHealthBar()
+    {
+        if (healthBar != null)
+        {
+            healthBar.SetMaxHealth(maxHealth);
+            healthBar.SetHealth(currentHealth);
+        }
+    }
+
+    private void Die()
+    {
+        gameObject.SetActive(false);
     }
 
     public void FlipChicken(float x)
