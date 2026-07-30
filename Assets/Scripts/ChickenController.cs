@@ -25,16 +25,22 @@ public class ChickenController : MonoBehaviour
     [SerializeField] float groundCheckRadius = 0.2f;
     [SerializeField] LayerMask groundLayer;
     private bool isGrounded;
+    
+    SoundFXManager SFXManager;
 
     private Collider2D chickenCollider;
     private float startingGravityScale;
     private Vector2 moveInput;
     private bool jumpPressed;
+    private bool attackPressed;
     private bool useGravityMode;
     private bool isJumping;
     private float jumpStartY;
     private bool jumpAnimationLocked;
     private int jumpAnimationStartFrame;
+    private bool attackAnimationLocked;
+    private int attackAnimationStartFrame;
+    private string isWalking = "isWalking";
 
     bool IsAnimationFinished(string animationName)
     {
@@ -57,6 +63,7 @@ public class ChickenController : MonoBehaviour
         anim = GetComponent<Animator>();
         startingGravityScale = chickenRB.gravityScale;
         MoveKinematicOnFloor();
+        SFXManager = FindObjectOfType<SoundFXManager>().GetComponent<SoundFXManager>();
     }
 
     void Update()
@@ -68,6 +75,11 @@ public class ChickenController : MonoBehaviour
         {
             Jump();
             PlayJumpAnimation();
+        }
+
+        if (attackPressed && !jumpAnimationLocked && !attackAnimationLocked)
+        {
+            PlayAttackAnimation();
         }
 
         UpdateAnimation();
@@ -117,6 +129,7 @@ public class ChickenController : MonoBehaviour
     private void ReadInput()
     {
         moveInput = Vector2.zero;
+        attackPressed = false;
 
         if (Keyboard.current == null)
         {
@@ -142,6 +155,7 @@ public class ChickenController : MonoBehaviour
 
         moveInput = Vector2.ClampMagnitude(moveInput, 1f);
         jumpPressed = Keyboard.current.spaceKey.wasPressedThisFrame;
+        attackPressed = Keyboard.current.fKey.wasPressedThisFrame;
     }
 
     private void CheckFloor()
@@ -314,7 +328,7 @@ public class ChickenController : MonoBehaviour
 
         if (jumpAnimationLocked)
         {
-            anim.SetBool("isWalking", false);
+            anim.SetBool(isWalking, false);
 
             if (Time.frameCount > jumpAnimationStartFrame && IsAnimationFinished("JumpAnimation"))
             {
@@ -326,7 +340,22 @@ public class ChickenController : MonoBehaviour
             }
         }
 
-        anim.SetBool("isWalking", moveInput != Vector2.zero);
+        if (attackAnimationLocked)
+        {
+            anim.SetBool(isWalking, false);
+
+            if (Time.frameCount > attackAnimationStartFrame && IsAnimationFinished("AttackAnimation"))
+            {
+                attackAnimationLocked = false;
+                PlayAnimationFromStart(moveInput != Vector2.zero ? "ChickenWalk" : "IdleAnimation");
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        anim.SetBool(isWalking, moveInput != Vector2.zero);
     }
 
     private void PlayJumpAnimation()
@@ -334,6 +363,22 @@ public class ChickenController : MonoBehaviour
         jumpAnimationLocked = true;
         jumpAnimationStartFrame = Time.frameCount;
         PlayAnimationFromStart("JumpAnimation");
+        SFXManager.PlaySFX(SFXManager.jump);
+        SFXManager.PlaySFX(SFXManager.jump2);
+    }
+
+    private void PlayAttackAnimation()
+    {
+        attackAnimationLocked = true;
+        attackAnimationStartFrame = Time.frameCount;
+        anim.SetBool(isWalking, false);
+        PlayAnimationFromStart("AttackAnimation");
+
+        if (SFXManager.wingAttack != null)
+        {
+            SFXManager.PlaySFX(SFXManager.wingAttack);
+            SFXManager.PlaySFX(SFXManager.wingAttack2);
+        }
     }
 
     private void PlayAnimationFromStart(string animationName)
