@@ -19,8 +19,19 @@ public class HudClock : MonoBehaviour
 
     [Header("Display")]
     [SerializeField] private bool use24HourClock;
+    [SerializeField] private int displayMinuteStep = 10;
+
+    [Header("Clock Color")]
+    [SerializeField] private bool useCurrentTextColorAsStart = true;
+    [SerializeField] private Color startColor = Color.white;
+    [SerializeField] private Color endColor = Color.red;
+
+    [Header("Clock Outline")]
+    [SerializeField] private Color outlineColor = Color.black;
+    [SerializeField, Range(0f, 1f)] private float outlineWidth = 0.15f;
 
     private float elapsedSeconds;
+    private Color runtimeStartColor;
 
     private void Awake()
     {
@@ -28,10 +39,27 @@ public class HudClock : MonoBehaviour
         {
             clockText = GetComponent<TMP_Text>();
         }
+
+        PrepareClockText();
+    }
+
+    private void OnValidate()
+    {
+        durationMinutes = Mathf.Max(0.01f, durationMinutes);
+        if (displayMinuteStep <= 0)
+        {
+            displayMinuteStep = 10;
+        }
+        FixTransparentDefaultColor(ref startColor, Color.white);
+        FixTransparentDefaultColor(ref endColor, Color.red);
+        FixTransparentDefaultColor(ref outlineColor, Color.black);
+        outlineWidth = Mathf.Clamp01(outlineWidth);
     }
 
     private void Start()
     {
+        PrepareClockText();
+        CaptureStartColor();
         UpdateClockText();
     }
 
@@ -58,6 +86,33 @@ public class HudClock : MonoBehaviour
         UpdateClockText();
     }
 
+    public void SetDurationMinutes(float minutes)
+    {
+        durationMinutes = Mathf.Max(0.01f, minutes);
+        UpdateClockText();
+    }
+
+    private void PrepareClockText()
+    {
+        if (clockText == null)
+        {
+            return;
+        }
+
+        clockText.enableVertexGradient = false;
+        ApplyClockOutline();
+    }
+
+    private void CaptureStartColor()
+    {
+        runtimeStartColor = useCurrentTextColorAsStart && clockText != null
+            ? clockText.color
+            : startColor;
+
+        FixTransparentDefaultColor(ref runtimeStartColor, Color.white);
+        FixTransparentDefaultColor(ref endColor, Color.red);
+    }
+
     private void UpdateClockText()
     {
         if (clockText == null)
@@ -69,6 +124,7 @@ public class HudClock : MonoBehaviour
         float durationSeconds = Mathf.Max(1f, durationMinutes * 60f);
         float progress = Mathf.Clamp01(elapsedSeconds / durationSeconds);
         int currentTotalMinutes = GetStartTotalMinutes() + Mathf.FloorToInt(totalNightMinutes * progress);
+        currentTotalMinutes = RoundDownToMinuteStep(currentTotalMinutes, displayMinuteStep);
 
         currentTotalMinutes %= 24 * 60;
         int hour = currentTotalMinutes / 60;
@@ -77,6 +133,25 @@ public class HudClock : MonoBehaviour
         clockText.text = use24HourClock
             ? $"{hour:00}:{minute:00}"
             : Format12HourTime(hour, minute);
+
+        ApplyClockColor(Color.Lerp(runtimeStartColor, endColor, progress));
+    }
+
+    private void ApplyClockColor(Color color)
+    {
+        color.a = 1f;
+        clockText.color = color;
+        clockText.faceColor = color;
+        ApplyClockOutline();
+    }
+
+    private void ApplyClockOutline()
+    {
+        Color visibleOutlineColor = outlineColor;
+        FixTransparentDefaultColor(ref visibleOutlineColor, Color.black);
+
+        clockText.outlineColor = visibleOutlineColor;
+        clockText.outlineWidth = outlineWidth;
     }
 
     private int GetStartTotalMinutes()
@@ -96,6 +171,24 @@ public class HudClock : MonoBehaviour
         }
 
         return minutes;
+    }
+
+    private int RoundDownToMinuteStep(int totalMinutes, int minuteStep)
+    {
+        int safeStep = Mathf.Max(1, minuteStep);
+        return totalMinutes - totalMinutes % safeStep;
+    }
+
+    private void FixTransparentDefaultColor(ref Color color, Color fallbackColor)
+    {
+        if (color.a > 0f)
+        {
+            return;
+        }
+
+        color = color.r == 0f && color.g == 0f && color.b == 0f
+            ? fallbackColor
+            : new Color(color.r, color.g, color.b, 1f);
     }
 
     private string Format12HourTime(int hour, int minute)
