@@ -33,6 +33,8 @@ public class HudClock : MonoBehaviour
     private float elapsedSeconds;
     private Color runtimeStartColor;
 
+    public float Progress01 { get; private set; }
+
     private void Awake()
     {
         if (clockText == null)
@@ -60,12 +62,13 @@ public class HudClock : MonoBehaviour
     {
         PrepareClockText();
         CaptureStartColor();
+        UpdateClockProgress();
         UpdateClockText();
     }
 
     private void Update()
     {
-        float durationSeconds = Mathf.Max(1f, durationMinutes * 60f);
+        float durationSeconds = GetDurationSeconds();
         elapsedSeconds += useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
 
         if (loopWhenFinished)
@@ -77,19 +80,30 @@ public class HudClock : MonoBehaviour
             elapsedSeconds = Mathf.Min(elapsedSeconds, durationSeconds);
         }
 
+        UpdateClockProgress();
         UpdateClockText();
     }
 
     public void ResetClock()
     {
         elapsedSeconds = 0f;
+        UpdateClockProgress();
         UpdateClockText();
     }
 
     public void SetDurationMinutes(float minutes)
     {
         durationMinutes = Mathf.Max(0.01f, minutes);
+        UpdateClockProgress();
         UpdateClockText();
+    }
+
+    public float GetProgressAtTime(int hour, int minute)
+    {
+        int totalNightMinutes = GetMinutesBetween(startHour, startMinute, endHour, endMinute);
+        int targetMinutes = GetMinutesBetween(startHour, startMinute, hour, minute);
+
+        return Mathf.Clamp01((float)targetMinutes / totalNightMinutes);
     }
 
     private void PrepareClockText()
@@ -113,6 +127,11 @@ public class HudClock : MonoBehaviour
         FixTransparentDefaultColor(ref endColor, Color.red);
     }
 
+    private void UpdateClockProgress()
+    {
+        Progress01 = Mathf.Clamp01(elapsedSeconds / GetDurationSeconds());
+    }
+
     private void UpdateClockText()
     {
         if (clockText == null)
@@ -121,9 +140,7 @@ public class HudClock : MonoBehaviour
         }
 
         int totalNightMinutes = GetMinutesBetween(startHour, startMinute, endHour, endMinute);
-        float durationSeconds = Mathf.Max(1f, durationMinutes * 60f);
-        float progress = Mathf.Clamp01(elapsedSeconds / durationSeconds);
-        int currentTotalMinutes = GetStartTotalMinutes() + Mathf.FloorToInt(totalNightMinutes * progress);
+        int currentTotalMinutes = GetStartTotalMinutes() + Mathf.FloorToInt(totalNightMinutes * Progress01);
         currentTotalMinutes = RoundDownToMinuteStep(currentTotalMinutes, displayMinuteStep);
 
         currentTotalMinutes %= 24 * 60;
@@ -134,7 +151,7 @@ public class HudClock : MonoBehaviour
             ? $"{hour:00}:{minute:00}"
             : Format12HourTime(hour, minute);
 
-        ApplyClockColor(Color.Lerp(runtimeStartColor, endColor, progress));
+        ApplyClockColor(Color.Lerp(runtimeStartColor, endColor, Progress01));
     }
 
     private void ApplyClockColor(Color color)
@@ -152,6 +169,11 @@ public class HudClock : MonoBehaviour
 
         clockText.outlineColor = visibleOutlineColor;
         clockText.outlineWidth = outlineWidth;
+    }
+
+    private float GetDurationSeconds()
+    {
+        return Mathf.Max(1f, durationMinutes * 60f);
     }
 
     private int GetStartTotalMinutes()
