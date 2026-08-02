@@ -9,6 +9,10 @@ public class TimeOfDayLighting : MonoBehaviour
     [Header("Controlled Lights")]
     [SerializeField] private Light2D[] controlledLights;
 
+    [Header("Universal Light")]
+    [SerializeField] private Light2D universalLight;
+    [SerializeField, Min(0f)] private float universalSunriseIntensity = 0.4f;
+
     [Header("Sunrise")]
     [SerializeField] private Color sunriseColor = new Color(1f, 0.72f, 0.36f, 1f);
     [SerializeField, Min(0f)] private float globalSunriseIntensity = 0.7f;
@@ -21,6 +25,7 @@ public class TimeOfDayLighting : MonoBehaviour
 
     private Color[] nightColors;
     private float[] nightIntensities;
+    private float universalNightIntensity;
 
     private void Awake()
     {
@@ -28,6 +33,8 @@ public class TimeOfDayLighting : MonoBehaviour
         {
             hudClock = FindFirstObjectByType<HudClock>();
         }
+
+        FindUniversalLightIfNeeded();
     }
 
     private void Start()
@@ -43,6 +50,7 @@ public class TimeOfDayLighting : MonoBehaviour
 
     private void OnValidate()
     {
+        universalSunriseIntensity = Mathf.Max(0f, universalSunriseIntensity);
         globalSunriseIntensity = Mathf.Max(0f, globalSunriseIntensity);
         localSunriseIntensityMultiplier = Mathf.Max(0f, localSunriseIntensityMultiplier);
         fasterChangeStartHour = Mathf.Clamp(fasterChangeStartHour, 0, 23);
@@ -72,16 +80,32 @@ public class TimeOfDayLighting : MonoBehaviour
             nightColors[i] = lightToControl.color;
             nightIntensities[i] = lightToControl.intensity;
         }
+
+        FindUniversalLightIfNeeded();
+        if (universalLight != null)
+        {
+            universalNightIntensity = universalLight.intensity;
+        }
     }
 
     private void ApplyLighting()
     {
-        if (hudClock == null || controlledLights == null || nightColors == null || nightIntensities == null)
+        if (hudClock == null)
         {
             return;
         }
 
         float progress = GetLightingProgress(hudClock.Progress01);
+        ApplyControlledLights(progress);
+        ApplyUniversalLight();
+    }
+
+    private void ApplyControlledLights(float progress)
+    {
+        if (controlledLights == null || nightColors == null || nightIntensities == null)
+        {
+            return;
+        }
 
         for (int i = 0; i < controlledLights.Length; i++)
         {
@@ -94,6 +118,32 @@ public class TimeOfDayLighting : MonoBehaviour
             lightToControl.color = Color.Lerp(nightColors[i], sunriseColor, progress);
             lightToControl.intensity = Mathf.Lerp(nightIntensities[i], GetSunriseIntensity(lightToControl, nightIntensities[i]), progress);
         }
+    }
+
+    private void ApplyUniversalLight()
+    {
+        FindUniversalLightIfNeeded();
+        if (universalLight == null)
+        {
+            return;
+        }
+
+        float progress = GetUniversalLightProgress(hudClock.Progress01);
+        universalLight.intensity = Mathf.Lerp(universalNightIntensity, universalSunriseIntensity, progress);
+    }
+
+    private float GetUniversalLightProgress(float clockProgress)
+    {
+        float clampedProgress = Mathf.Clamp01(clockProgress);
+        float fasterChangeStartProgress = Mathf.Clamp(hudClock.GetProgressAtTime(fasterChangeStartHour, fasterChangeStartMinute), 0.01f, 0.99f);
+
+        if (clampedProgress <= fasterChangeStartProgress)
+        {
+            return 0f;
+        }
+
+        float dawnProgress = (clampedProgress - fasterChangeStartProgress) / (1f - fasterChangeStartProgress);
+        return Mathf.SmoothStep(0f, 1f, dawnProgress);
     }
 
     private float GetLightingProgress(float clockProgress)
@@ -120,5 +170,23 @@ public class TimeOfDayLighting : MonoBehaviour
         }
 
         return nightIntensity * localSunriseIntensityMultiplier;
+    }
+
+    private void FindUniversalLightIfNeeded()
+    {
+        if (universalLight != null)
+        {
+            return;
+        }
+
+        Light2D[] lights = FindObjectsOfType<Light2D>();
+        for (int i = 0; i < lights.Length; i++)
+        {
+            if (lights[i] != null && lights[i].name == "UniversalLight")
+            {
+                universalLight = lights[i];
+                return;
+            }
+        }
     }
 }

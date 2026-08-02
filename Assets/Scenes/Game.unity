@@ -494,7 +494,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.06
+  m_Intensity: 0
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 0fed087e4351e42a00000000b9b9fe09
@@ -1144,7 +1144,7 @@ Transform:
   m_GameObject: {fileID: 371791156}
   serializedVersion: 2
   m_LocalRotation: {x: -0.0064269165, y: -0.9925254, z: 0.00078912626, w: -0.12186678}
-  m_LocalPosition: {x: -0.0039376006, y: 0.011985409, z: 9.013516}
+  m_LocalPosition: {x: -1.61, y: 6.37, z: 15.78}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1167,7 +1167,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.49
   m_Color: {r: 0.27450982, g: 0.26666668, b: 0.6509804, a: 1}
-  m_Intensity: 0.7
+  m_Intensity: 0.3
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 0fed087e4351e42a00000000b9b9fe09
@@ -6477,9 +6477,9 @@ Transform:
   m_GameObject: {fileID: 524740888}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -753, y: 313, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: -798, y: 307, z: 0}
+  m_LocalScale: {x: 1.78, y: 1.78, z: 1.78}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2086146685}
   - {fileID: 1126185043}
@@ -12018,8 +12018,8 @@ MonoBehaviour:
   m_LightType: 1
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.496
-  m_Color: {r: 0.27491352, g: 0.26713246, b: 0.6509434, a: 1}
-  m_Intensity: 1.78
+  m_Color: {r: 0.27450982, g: 0.26666668, b: 0.6509804, a: 1}
+  m_Intensity: 0.69
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 0fed087e4351e42a00000000b9b9fe09
@@ -12038,8 +12038,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: -0.02625084, y: 10.3921, z: 0}
-    m_Extent: {x: 44.94655, y: 16.3471, z: 0}
+    m_Center: {x: -0.18499947, y: 14.21095, z: 0}
+    m_Extent: {x: 45.8677, y: 20.16595, z: 0}
   m_PointLightInnerAngle: 153.35779
   m_PointLightOuterAngle: 297.63757
   m_PointLightInnerRadius: -0
@@ -12052,8 +12052,8 @@ MonoBehaviour:
   m_ShapePath:
   - {x: -0.5316433, y: -0.44353506, z: 0}
   - {x: 0.58629066, y: -0.46683887, z: 0}
-  - {x: 39.43265, y: 19.976765, z: -0.00077343173}
-  - {x: -39.482483, y: 21.249533, z: -0.0008791164}
+  - {x: 40.193707, y: 28.154833, z: -0.00080880383}
+  - {x: -40.562817, y: 28.886765, z: -0.00094852265}
 --- !u!4 &831470143
 Transform:
   m_ObjectHideFlags: 0
@@ -12063,7 +12063,7 @@ Transform:
   m_GameObject: {fileID: 831470141}
   serializedVersion: 2
   m_LocalRotation: {x: -0.43836194, y: 0.0028385324, z: 0.89877516, w: -0.0058198534}
-  m_LocalPosition: {x: 0.16, y: 22.68, z: 25.494}
+  m_LocalPosition: {x: -0.52, y: 33.24, z: 25.84}
   m_LocalScale: {x: 1.676002, y: 1.676002, z: 1.676002}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -12093,9 +12093,11 @@ MonoBehaviour:
   - {fileID: 1589613070}
   - {fileID: 1768654754}
   - {fileID: 1801980562}
-  sunriseColor: {r: 1, g: 0.83768374, b: 0.3882353, a: 0.92156863}
-  globalSunriseIntensity: 0.7
-  localSunriseIntensityMultiplier: 1.2
+  universalLight: {fileID: 176855048}
+  universalSunriseIntensity: 0.4
+  sunriseColor: {r: 1, g: 0.95686275, b: 0.8352941, a: 0.49019608}
+  globalSunriseIntensity: 1.2
+  localSunriseIntensityMultiplier: 2.2
   fasterChangeStartHour: 4
   fasterChangeStartMinute: 0
   lightProgressAtFasterChangeStart: 0.35
@@ -12261,7 +12263,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.2
+  m_Volume: 0.18
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -13192,12 +13194,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -13884,7 +13886,7 @@ MonoBehaviour:
   startMinute: 0
   endHour: 6
   endMinute: 0
-  durationMinutes: 0.5
+  durationMinutes: 4
   loopWhenFinished: 0
   useUnscaledTime: 0
   use24HourClock: 0
@@ -13893,7 +13895,7 @@ MonoBehaviour:
   startColor: {r: 1, g: 1, b: 1, a: 1}
   endColor: {r: 0.96862745, g: 0.8039216, b: 0.3647059, a: 1}
   outlineColor: {r: 0, g: 0, b: 0, a: 1}
-  outlineWidth: 0.15
+  outlineWidth: 0
 --- !u!114 &1570866061
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13923,8 +13925,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294910208
-  m_fontColor: {r: 0, g: 0.12898159, b: 1, a: 1}
+    rgba: 4289086534
+  m_fontColor: {r: 0.27450982, g: 0.26666668, b: 0.6509804, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -13941,8 +13943,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 50
-  m_fontSizeBase: 50
+  m_fontSize: 60
+  m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -14020,7 +14022,7 @@ Transform:
   m_GameObject: {fileID: 1589613068}
   serializedVersion: 2
   m_LocalRotation: {x: -0.0064269165, y: -0.9925254, z: 0.00078912626, w: -0.12186678}
-  m_LocalPosition: {x: 2.9343753, y: -0.03800363, z: 12.7748995}
+  m_LocalPosition: {x: 5.08, y: 6.31, z: 4.49}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14043,7 +14045,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.49
   m_Color: {r: 0.27450982, g: 0.26666668, b: 0.6509804, a: 1}
-  m_Intensity: 0.7
+  m_Intensity: 0.3
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 0fed087e4351e42a00000000b9b9fe09
@@ -14564,7 +14566,7 @@ Transform:
   m_GameObject: {fileID: 1768654752}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -1.1641534e-10, w: 1}
-  m_LocalPosition: {x: -0.00085807825, y: 0.017912775, z: -14.794246}
+  m_LocalPosition: {x: -0, y: 6.28, z: -15.26}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14587,7 +14589,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.49
   m_Color: {r: 0.27450982, g: 0.26666668, b: 0.6509804, a: 1}
-  m_Intensity: 0.7
+  m_Intensity: 0.3
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 0fed087e4351e42a00000000b9b9fe09
@@ -14739,7 +14741,7 @@ Transform:
   m_GameObject: {fileID: 1801980560}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -1.1641534e-10, w: 1}
-  m_LocalPosition: {x: -0.0033045686, y: 0.011977236, z: -8.924329}
+  m_LocalPosition: {x: -0, y: 6.32, z: -9.48}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14762,7 +14764,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.49
   m_Color: {r: 0.27450982, g: 0.26666668, b: 0.6509804, a: 1}
-  m_Intensity: 0.7
+  m_Intensity: 0.3
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
   m_ApplyToSortingLayers: 0fed087e4351e42a00000000b9b9fe09
@@ -15533,58 +15535,58 @@ MonoBehaviour:
   - renderer: {fileID: 2100100102}
     moonLength: 2
     sunriseLength: 2
-    thickness: 2
-    alphaMultiplier: 1.5
+    thickness: 1.5
+    alphaMultiplier: 1
   - renderer: {fileID: 2100100112}
     moonLength: 2
     sunriseLength: 2
-    thickness: 2
-    alphaMultiplier: 1.5
+    thickness: 1.5
+    alphaMultiplier: 1
   - renderer: {fileID: 2100100122}
     moonLength: 2
     sunriseLength: 2
-    thickness: 2
-    alphaMultiplier: 1.5
+    thickness: 1.5
+    alphaMultiplier: 1
   - renderer: {fileID: 2100100132}
     moonLength: 2
     sunriseLength: 2
-    thickness: 2
-    alphaMultiplier: 1.5
+    thickness: 1.5
+    alphaMultiplier: 1
   - renderer: {fileID: 2100100142}
     moonLength: 2
     sunriseLength: 2
-    thickness: 2
-    alphaMultiplier: 1.5
+    thickness: 1.5
+    alphaMultiplier: 1
   - renderer: {fileID: 2100100152}
     moonLength: 2
     sunriseLength: 2
-    thickness: 2
-    alphaMultiplier: 1.5
+    thickness: 1.5
+    alphaMultiplier: 1
   - renderer: {fileID: 2100100162}
-    moonLength: 10
-    sunriseLength: 10
+    moonLength: 5
+    sunriseLength: 5
     thickness: 2
-    alphaMultiplier: 1.2
+    alphaMultiplier: 0.5
   - renderer: {fileID: 2100100172}
-    moonLength: 10
-    sunriseLength: 10
+    moonLength: 5
+    sunriseLength: 5
     thickness: 2
-    alphaMultiplier: 1.2
+    alphaMultiplier: 0.5
   - renderer: {fileID: 2100100182}
-    moonLength: 10
-    sunriseLength: 10
+    moonLength: 5
+    sunriseLength: 5
     thickness: 2
-    alphaMultiplier: 1.2
+    alphaMultiplier: 0.5
   - renderer: {fileID: 2100100192}
-    moonLength: 10
-    sunriseLength: 10
+    moonLength: 5
+    sunriseLength: 5
     thickness: 2
-    alphaMultiplier: 1.2
+    alphaMultiplier: 0.5
   - renderer: {fileID: 2100100202}
-    moonLength: 10
-    sunriseLength: 10
+    moonLength: 5
+    sunriseLength: 5
     thickness: 2
-    alphaMultiplier: 1.2
+    alphaMultiplier: 0.5
   - renderer: {fileID: 0}
     moonLength: 0.5
     sunriseLength: 1.1
@@ -15593,10 +15595,18 @@ MonoBehaviour:
   fasterChangeStartHour: 4
   fasterChangeStartMinute: 0
   beamProgressAtFasterChangeStart: 0.25
-  moonAngle: -42
+  moonAngle: -80
   sunriseAngle: -45
   moonColor: {r: 0.45, g: 0.5, b: 1, a: 0.16}
-  sunriseColor: {r: 1, g: 0.8129102, b: 0.5801887, a: 0.5}
+  sunriseColor: {r: 1, g: 0.8467982, b: 0.6556604, a: 0.36078432}
+  chickenRenderer: {fileID: 1358571338}
+  chickenMoonTint: {r: 0.63318795, g: 0.6784048, b: 0.8773585, a: 1}
+  chickenSunriseTint: {r: 1, g: 0.96644425, b: 0.8349056, a: 1}
+  chickenMoonTintStrength: 0.3
+  chickenSunriseTintStrength: 0.1
+  chickenMoonBrightnessBoost: 10
+  chickenSunriseBrightnessBoost: 4
+  chickenLightFadeSpeed: 5
 --- !u!1 &2100100100
 GameObject:
   m_ObjectHideFlags: 0
@@ -16859,12 +16869,12 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 2100100001}
   - {fileID: 519420032}
   - {fileID: 1358571339}
   - {fileID: 176855049}
   - {fileID: 1955502237}
   - {fileID: 831470143}
+  - {fileID: 2100100001}
   - {fileID: 1117283566}
   - {fileID: 2006842469}
   - {fileID: 315765357}
