@@ -1,0 +1,27 @@
+****Spider****
+SpiderWalk - 6 frames
+SpiderIdle - 4 frames
+
+****Chicken****
+ChickenWalk - 6 frames
+ChickenIdle - 4 frames
+ChickenLayingEgg - 9 frames
+ChickenRest - 6 frames
+
+****Boar****
+BoarWalk - 6 frames
+BoarIdle - 5 frames
+
+****Bat****
+BatFlying - 4 frames
+
+****Chick****
+ChickWalk - 7 frames
+ChickIdle - 4 frames
+ChickRest - 4 frames
+
+****Wolf*****
+WolfAtack - 6 frames
+WolfWalk - 4 frames
+WolfRest - 4 frames
+WolfRun - 5 frames

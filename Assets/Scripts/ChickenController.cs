@@ -35,7 +35,7 @@ public class ChickenController : MonoBehaviour
     [SerializeField] private HealthBar healthBar;
 
     [Header("Attack")]
-    [SerializeField] private int attackDamage = 1;
+    [SerializeField] private int attackDamage = 50;
     [SerializeField] private float attackRange = 1.2f;
     [SerializeField] private float attackHeight = 1.2f;
     [SerializeField] private LayerMask enemyLayer;
@@ -471,6 +471,7 @@ public class ChickenController : MonoBehaviour
     {
         Collider2D[] hits = Physics2D.OverlapBoxAll(GetAttackCenter(), GetAttackSize(), 0f, GetEnemyLayerMask());
         HashSet<EnemyBehavior> damagedEnemies = new HashSet<EnemyBehavior>();
+        HashSet<WolfController> damagedWolves = new HashSet<WolfController>();
 
         foreach (Collider2D hit in hits)
         {
@@ -479,6 +480,13 @@ public class ChickenController : MonoBehaviour
             if (enemy != null && damagedEnemies.Add(enemy))
             {
                 enemy.TakeDamage(attackDamage);
+            }
+
+            WolfController wolf = hit.GetComponentInParent<WolfController>();
+
+            if (wolf != null && damagedWolves.Add(wolf))
+            {
+                wolf.TakeDamage(attackDamage);
             }
         }
     }
