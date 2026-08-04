@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - Audio
+  - ShotGun
+  - Ammo
+  - Wing
   layers:
   - Default
   - TransparentFX
@@ -15,7 +18,7 @@ TagManager:
   - Ground
   - Floor
   - Enemy
-  - 
+  - Item
   - 
   - 
   - 
@@ -47,6 +50,9 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 719606083
+    locked: 0
+  - name: Shotgun
+    uniqueID: 1122832781
     locked: 0
   - name: Foreground
     uniqueID: 167688633

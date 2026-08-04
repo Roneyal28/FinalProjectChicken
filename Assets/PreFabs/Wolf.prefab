@@ -129,13 +129,25 @@ BoxCollider2D:
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IncludeLayers: {serializedVersion: 2, m_Bits: 0}
-  m_ExcludeLayers: {serializedVersion: 2, m_Bits: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
   m_LayerOverridePriority: 0
-  m_ForceSendLayers: {serializedVersion: 2, m_Bits: 4294967295}
-  m_ForceReceiveLayers: {serializedVersion: 2, m_Bits: 4294967295}
-  m_ContactCaptureLayers: {serializedVersion: 2, m_Bits: 4294967295}
-  m_CallbackLayers: {serializedVersion: 2, m_Bits: 4294967295}
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
@@ -169,8 +181,12 @@ Rigidbody2D:
   m_AngularDamping: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
-  m_IncludeLayers: {serializedVersion: 2, m_Bits: 0}
-  m_ExcludeLayers: {serializedVersion: 2, m_Bits: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -186,6 +202,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -307,10 +324,10 @@ MonoBehaviour:
   hitLayerName: Hit Layer
   deathStateName: WolfDie
   deathAnimationDuration: 1
-  walkingSound: {fileID: 0}
-  attackingSound: {fileID: 0}
-  hitSound: {fileID: 0}
-  deathSound: {fileID: 0}
+  walkingSound: {fileID: 8300000, guid: 0f3ef91767015744c867790e7fd2b4d3, type: 3}
+  attackingSound: {fileID: 8300000, guid: ed3923d26f334fe4799c2fde22f79b1f, type: 3}
+  hitSound: {fileID: 8300000, guid: 8f92ce0fb35b74ac59fe5235a233dae1, type: 3}
+  deathSound: {fileID: 8300000, guid: 13040221bc1ca4be08fcb61eaf2df077, type: 3}
   audioSource: {fileID: 7639922755926036764}
   useDirectionalAudio: 1
   fullPanDistance: 8
