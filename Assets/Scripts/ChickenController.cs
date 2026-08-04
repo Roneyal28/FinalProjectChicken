@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class ChickenController : MonoBehaviour
 {
@@ -12,7 +14,8 @@ public class ChickenController : MonoBehaviour
     private Vector3 wingOriginalPosition;
     private SpriteRenderer shotgunSR;
    
-   
+   [SerializeField] private Canvas endScreen;
+   [SerializeField] private Image winScreen;
 
     [Header("Movement")]
     [SerializeField] int Step = 1;
@@ -80,6 +83,8 @@ public class ChickenController : MonoBehaviour
 
     void Awake()
     {
+        endScreen.enabled = false;
+        winScreen.enabled = false;
         chickenSR = GetComponent<SpriteRenderer>();
         chickenRB = GetComponent<Rigidbody2D>();
         chickenCollider = GetComponent<Collider2D>();
@@ -601,6 +606,16 @@ public class ChickenController : MonoBehaviour
         else 
         {
             chickenRB.gravityScale = 1;
+        }
+    }
+
+    public void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "BurnExit")
+        {
+            endScreen.enabled = true;
+            winScreen.enabled = true;
+            Time.timeScale = 0;
         }
     }
 }

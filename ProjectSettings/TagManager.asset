@@ -8,6 +8,9 @@ TagManager:
   - ShotGun
   - Ammo
   - Wing
+  - EndScreen
+  - WinScreen
+  - BurnExit
   layers:
   - Default
   - TransparentFX
