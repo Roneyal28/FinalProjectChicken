@@ -7,11 +7,14 @@ public class ItemsManagement : MonoBehaviour
     private GameObject wing;
     private GameObject item;
     bool canPickupItem = false;
-    
+    GameObject shotgun;
+    private Animator shotgunAnim;
     void Awake()
     {
         wing = GameObject.FindGameObjectWithTag("Wing");
-        wing.SetActive(false);
+        shotgun = wing.GetComponentInChildren<SpriteRenderer>().gameObject;
+        shotgunAnim = shotgun.GetComponent<Animator>();
+        shotgun.SetActive(false);
     }
 
     void Update()
@@ -20,9 +23,10 @@ public class ItemsManagement : MonoBehaviour
         {
             if (item.tag == "ShotGun")
             {
-                wing.SetActive(true);
+                shotgun.SetActive(true);
+                shotgunAnim.Play("DangleAnim");
             }
-            item.SetActive(false);
+            Destroy(item);
         }
     }
 

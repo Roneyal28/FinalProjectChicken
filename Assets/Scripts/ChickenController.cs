@@ -8,6 +8,11 @@ public class ChickenController : MonoBehaviour
     private SpriteRenderer chickenSR;
     private Rigidbody2D chickenRB;
     private Animator anim;
+    private GameObject wing;
+    private Vector3 wingOriginalPosition;
+    private SpriteRenderer shotgunSR;
+   
+   
 
     [Header("Movement")]
     [SerializeField] int Step = 1;
@@ -79,6 +84,9 @@ public class ChickenController : MonoBehaviour
         chickenRB = GetComponent<Rigidbody2D>();
         chickenCollider = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
+        wing = GameObject.FindGameObjectWithTag("Wing");
+        wingOriginalPosition = wing.transform.position;
+        shotgunSR= wing.GetComponentInChildren<SpriteRenderer>();
         startingGravityScale = chickenRB.gravityScale;
         currentHealth = maxHealth;
         if (healthBar == null || !healthBar.HasBothSliders)
@@ -569,10 +577,18 @@ public class ChickenController : MonoBehaviour
         if (x < 0)
         {
             chickenSR.flipX = true;
+            if(shotgunSR.gameObject.activeSelf)
+            {
+                shotgunSR.flipX = true;
+            }
         }
         else 
         {
             chickenSR.flipX = false;
+            if(shotgunSR.gameObject.activeSelf)
+            {
+                shotgunSR.flipX = false;
+            }
         }
     }
 
