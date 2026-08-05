@@ -9,6 +9,7 @@ public class ItemsManagement : MonoBehaviour
     bool canPickupItem = false;
     GameObject shotgun;
     private Animator shotgunAnim;
+    private int ammoCount =0;
     void Awake()
     {
         wing = GameObject.FindGameObjectWithTag("Wing");
@@ -19,12 +20,20 @@ public class ItemsManagement : MonoBehaviour
 
     void Update()
     {
+        PickUp();
+    }
+
+    private void PickUp()
+    {
         if (Keyboard.current.eKey.wasPressedThisFrame && canPickupItem && item != null)
         {
             if (item.tag == "ShotGun")
             {
                 shotgun.SetActive(true);
-                shotgunAnim.Play("DangleAnim");
+            }
+            if (item.tag == "Ammo")
+            {
+                AmmoCount++;
             }
             Destroy(item);
         }
@@ -37,5 +46,11 @@ public class ItemsManagement : MonoBehaviour
             canPickupItem = true;
             item = collision.gameObject;
         }
+    }
+    
+    public int AmmoCount
+    {
+        get { return ammoCount; }
+        set { ammoCount = value; }
     }
 }

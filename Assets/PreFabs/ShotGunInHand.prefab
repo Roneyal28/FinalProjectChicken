@@ -14,7 +14,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2791378247101765658, guid: a12eed90f591ae1489db4fbbc603560d, type: 3}
       propertyPath: m_Name
-      value: ShotGun Variant
+      value: ShotGunInHand
+      objectReference: {fileID: 0}
+    - target: {fileID: 2791378247101765658, guid: a12eed90f591ae1489db4fbbc603560d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6411401649025932505, guid: a12eed90f591ae1489db4fbbc603560d, type: 3}
+      propertyPath: m_SortingOrder
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6691646664932450917, guid: a12eed90f591ae1489db4fbbc603560d, type: 3}
       propertyPath: m_LocalPosition.x
