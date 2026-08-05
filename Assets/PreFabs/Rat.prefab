@@ -209,7 +209,8 @@ MonoBehaviour:
   maxMoveTime: 3
   minIdleTime: 1
   maxIdleTime: 2
-  idleChance: 0.35
+  idleChance: 0.5
+  damageParticles: {fileID: 8726546477245722076, guid: 2a1b8fb20459eb34b892fbf21d49090a, type: 3}
   walkingBoolName: isWalking
   walkStateName: ratWalk
   idleStateName: ratIdle
@@ -219,6 +220,6 @@ MonoBehaviour:
   deathAnimationDuration: 1
   enemyLayerName: Enemy
   playerLayerName: Player
-  maxHealth: 3
-  currentHealth: 3
+  maxHealth: 150
+  currentHealth: 150
   deathEffect: {fileID: 0}

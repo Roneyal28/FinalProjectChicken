@@ -27,6 +27,7 @@ public class WolfController : MonoBehaviour
     [Header("Health")]
     [SerializeField] private int maxHealth = 100;
     [SerializeField] private int currentHealth;
+    [SerializeField] private ParticleSystem damageParticles;
 
     [Header("Animation")]
     [SerializeField] private string idleStateName = "WolfIdle";
@@ -304,7 +305,7 @@ public class WolfController : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Vector2 attackDirection)
     {
         if (isDead || damage <= 0)
         {
@@ -312,6 +313,7 @@ public class WolfController : MonoBehaviour
         }
 
         currentHealth = Mathf.Max(0, currentHealth - damage);
+        SpawnDamageParticles(attackDirection);
 
         if (currentHealth > 0 && animator != null && hitLayerIndex >= 0)
         {
@@ -327,6 +329,21 @@ public class WolfController : MonoBehaviour
         {
             Die();
         }
+    }
+
+    private void SpawnDamageParticles(Vector2 attackDirection)
+    {
+        if (damageParticles == null)
+        {
+            return;
+        }
+
+        Vector2 direction = attackDirection.sqrMagnitude > 0f
+            ? attackDirection.normalized
+            : Vector2.right;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        Quaternion spawnRotation = Quaternion.Euler(0f, 0f, angle);
+        Instantiate(damageParticles, transform.position, spawnRotation);
     }
 
     private void Die()

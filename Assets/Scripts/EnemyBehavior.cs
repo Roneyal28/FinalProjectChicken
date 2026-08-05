@@ -14,7 +14,7 @@ public class EnemyBehavior : MonoBehaviour
     [SerializeField] private float maxIdleTime = 1.2f;
     [Range(0f, 1f)]
     [SerializeField] private float idleChance = 0.35f;
-
+    [SerializeField] private ParticleSystem damageParticles;
     [Header("Animation")]
     [SerializeField] private string walkingBoolName = "isWalking";
     [SerializeField] private string walkStateName = "ratWalk";
@@ -282,7 +282,7 @@ public class EnemyBehavior : MonoBehaviour
         enemyRB.WakeUp();
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Vector2 attackDirection)
     {
         if (isDead)
         {
@@ -290,6 +290,8 @@ public class EnemyBehavior : MonoBehaviour
         }
 
         currentHealth -= damage;
+
+        SpawnDamageParticles(attackDirection);
 
         if (currentHealth <= 0)
         {
@@ -321,7 +323,6 @@ public class EnemyBehavior : MonoBehaviour
         isDead = true;
         currentHealth = 0;
         StopMoving();
-
         if (enemyCollider != null)
         {
             enemyCollider.enabled = false;
@@ -355,5 +356,20 @@ public class EnemyBehavior : MonoBehaviour
         Gizmos.DrawLine(left, right);
         Gizmos.DrawWireSphere(left, 0.1f);
         Gizmos.DrawWireSphere(right, 0.1f);
+    }
+
+    private void SpawnDamageParticles(Vector2 attackDirection)
+    {
+        if (damageParticles == null)
+        {
+            return;
+        }
+
+        Vector2 direction = attackDirection.sqrMagnitude > 0f
+            ? attackDirection.normalized
+            : Vector2.right;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        Quaternion spawnRotation = Quaternion.Euler(0f, 0f, angle);
+        Instantiate(damageParticles, transform.position, spawnRotation);
     }
 }

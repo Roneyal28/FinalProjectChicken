@@ -492,14 +492,16 @@ public class ChickenController : MonoBehaviour
 
             if (enemy != null && damagedEnemies.Add(enemy))
             {
-                enemy.TakeDamage(attackDamage);
+                Vector2 attackDirection = (Vector2)enemy.transform.position - GetAttackCenter();
+                enemy.TakeDamage(attackDamage, attackDirection);
             }
 
             WolfController wolf = hit.GetComponentInParent<WolfController>();
 
             if (wolf != null && damagedWolves.Add(wolf))
             {
-                wolf.TakeDamage(attackDamage);
+                Vector2 attackDirection = (Vector2)wolf.transform.position - GetAttackCenter();
+                wolf.TakeDamage(attackDamage, attackDirection);
             }
         }
     }
