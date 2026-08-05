@@ -300,7 +300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b871e251c9584d64880c8991257f8d92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WolfController
-  moveSpeed: 2
+  moveSpeed: 3
   maxDistanceFromStart: 4
   startMoving: 1
   minMoveTime: 1
@@ -317,6 +317,7 @@ MonoBehaviour:
     m_Bits: 0
   maxHealth: 100
   currentHealth: 100
+  damageParticles: {fileID: 8726546477245722076, guid: 2a1b8fb20459eb34b892fbf21d49090a, type: 3}
   idleStateName: WolfIdle
   walkStateName: WolfRun
   attackStateName: WolfAttack

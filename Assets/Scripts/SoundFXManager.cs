@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class SoundFXManager : MonoBehaviour
 {
@@ -57,6 +58,14 @@ public class SoundFXManager : MonoBehaviour
     [Range(0f, 1f)] public float ratHitVolume = 1f;
     [Range(0f, 1f)] public float ratDeathVolume = 1f;
 
+    [Header("Chicken Damage Pitch Ranges")]
+    [Range(0.1f, 3f)] public float takeDamageMinPitch = 0.9f;
+    [Range(0.1f, 3f)] public float takeDamageMaxPitch = 1.1f;
+    [Range(0.1f, 3f)] public float takeDamage2MinPitch = 0.9f;
+    [Range(0.1f, 3f)] public float takeDamage2MaxPitch = 1.1f;
+    [Range(0.1f, 3f)] public float takeDamage3MinPitch = 0.9f;
+    [Range(0.1f, 3f)] public float takeDamage3MaxPitch = 1.1f;
+
 
 
 
@@ -95,6 +104,7 @@ public class SoundFXManager : MonoBehaviour
             return;
         }
 
+        SFXSource.pitch = 1f;
         SFXSource.PlayOneShot(clip, GetSFXVolume(clip));
     }
 
@@ -105,7 +115,38 @@ public class SoundFXManager : MonoBehaviour
             return;
         }
 
+        SFXSource.pitch = 1f;
         SFXSource.PlayOneShot(clip, volume);
+    }
+
+    public void PlayRandomChickenDamageSound()
+    {
+        AudioClip[] clips = { takeDamage, takeDamage2, takeDamage3 };
+        float[] volumes = { takeDamageVolume, takeDamageVolume2, takeDamageVolume3 };
+        float[] minimumPitches = { takeDamageMinPitch, takeDamage2MinPitch, takeDamage3MinPitch };
+        float[] maximumPitches = { takeDamageMaxPitch, takeDamage2MaxPitch, takeDamage3MaxPitch };
+
+        int availableCount = 0;
+        int[] availableIndices = new int[clips.Length];
+
+        for (int i = 0; i < clips.Length; i++)
+        {
+            if (clips[i] != null)
+            {
+                availableIndices[availableCount++] = i;
+            }
+        }
+
+        if (availableCount == 0 || SFXSource == null)
+        {
+            return;
+        }
+
+        int selectedIndex = availableIndices[Random.Range(0, availableCount)];
+        float minPitch = Mathf.Min(minimumPitches[selectedIndex], maximumPitches[selectedIndex]);
+        float maxPitch = Mathf.Max(minimumPitches[selectedIndex], maximumPitches[selectedIndex]);
+        SFXSource.pitch = Random.Range(minPitch, maxPitch);
+        SFXSource.PlayOneShot(clips[selectedIndex], volumes[selectedIndex]);
     }
 
     private float GetSFXVolume(AudioClip clip)

@@ -41,6 +41,7 @@ public class ChickenController : MonoBehaviour
     [SerializeField] private int maxHealth = 100;
     [SerializeField] private int currentHealth;
     [SerializeField] private HealthBar healthBar;
+    [SerializeField] private ParticleSystem damageParticles;
 
     [Header("Attack")]
     [SerializeField] private int attackDamage = 50;
@@ -63,6 +64,8 @@ public class ChickenController : MonoBehaviour
     private int jumpAnimationStartFrame;
     private bool attackAnimationLocked;
     private int attackAnimationStartFrame;
+    private bool hurtAnimationLocked;
+    private int hurtAnimationStartFrame;
     private string isWalking = "isWalking";
 
     public int CurrentHealth => currentHealth;
@@ -126,7 +129,7 @@ public class ChickenController : MonoBehaviour
             PlayJumpAnimation();
         }
 
-        if (attackPressed && !jumpAnimationLocked && !attackAnimationLocked)
+        if (attackPressed && !jumpAnimationLocked && !attackAnimationLocked && !hurtAnimationLocked)
         {
             PlayAttackAnimation();
         }
@@ -404,6 +407,21 @@ public class ChickenController : MonoBehaviour
             return;
         }
 
+        if (hurtAnimationLocked)
+        {
+            anim.SetBool(isWalking, false);
+
+            if (Time.frameCount > hurtAnimationStartFrame && IsAnimationFinished("HurtAnimation"))
+            {
+                hurtAnimationLocked = false;
+                PlayAnimationFromStart(moveInput != Vector2.zero ? "ChickenWalk" : "IdleAnimation");
+            }
+            else
+            {
+                return;
+            }
+        }
+
         if (jumpAnimationLocked)
         {
             anim.SetBool(isWalking, false);
@@ -492,14 +510,16 @@ public class ChickenController : MonoBehaviour
 
             if (enemy != null && damagedEnemies.Add(enemy))
             {
-                enemy.TakeDamage(attackDamage);
+                Vector2 attackDirection = (Vector2)enemy.transform.position - GetAttackCenter();
+                enemy.TakeDamage(attackDamage, attackDirection);
             }
 
             WolfController wolf = hit.GetComponentInParent<WolfController>();
 
             if (wolf != null && damagedWolves.Add(wolf))
             {
-                wolf.TakeDamage(attackDamage);
+                Vector2 attackDirection = (Vector2)wolf.transform.position - GetAttackCenter();
+                wolf.TakeDamage(attackDamage, attackDirection);
             }
         }
     }
@@ -544,14 +564,64 @@ public class ChickenController : MonoBehaviour
         return Physics2D.DefaultRaycastLayers;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Vector2 attackDirection)
     {
+        int previousHealth = currentHealth;
         currentHealth = Mathf.Clamp(currentHealth - damage, 0, maxHealth);
+
+        if (currentHealth >= previousHealth)
+        {
+            return;
+        }
+
+        SpawnDamageParticles(attackDirection);
+        PlayHurtAnimation();
+        if (SFXManager != null)
+        {
+            SFXManager.PlayRandomChickenDamageSound();
+        }
         UpdateHealthBar();
 
         if (currentHealth <= 0)
         {
             Die();
+        }
+    }
+
+    private void PlayHurtAnimation()
+    {
+        if (anim == null)
+        {
+            return;
+        }
+
+        hurtAnimationLocked = true;
+        hurtAnimationStartFrame = Time.frameCount;
+        jumpAnimationLocked = false;
+        attackAnimationLocked = false;
+        anim.SetBool(isWalking, false);
+        PlayAnimationFromStart("HurtAnimation");
+    }
+
+    private void SpawnDamageParticles(Vector2 attackDirection)
+    {
+        if (damageParticles == null)
+        {
+            return;
+        }
+
+        Vector2 direction = attackDirection.sqrMagnitude > 0f
+            ? attackDirection.normalized
+            : Vector2.right;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        Quaternion spawnRotation = Quaternion.Euler(0f, 0f, angle);
+        Vector3 spawnPosition = chickenCollider != null
+            ? chickenCollider.bounds.center
+            : transform.position;
+        ParticleSystem instance = Instantiate(damageParticles, spawnPosition, spawnRotation);
+        foreach (ParticleSystem particleSystem in instance.GetComponentsInChildren<ParticleSystem>(true))
+        {
+            particleSystem.Play(false);
         }
     }
 
