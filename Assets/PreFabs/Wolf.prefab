@@ -300,7 +300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b871e251c9584d64880c8991257f8d92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WolfController
-  moveSpeed: 2
+  moveSpeed: 3
   maxDistanceFromStart: 4
   startMoving: 1
   minMoveTime: 1

@@ -259,7 +259,8 @@ public class WolfController : MonoBehaviour
         PlayState(attackStateName);
 
         // Damage is applied once per attack. The animation event remains dedicated to sound.
-        chicken.TakeDamage(attackDamage);
+        Vector2 attackDirection = (Vector2)chicken.transform.position - (Vector2)transform.position;
+        chicken.TakeDamage(attackDamage, attackDirection);
     }
 
     private void BeginAttackDelay(ChickenController chicken)
