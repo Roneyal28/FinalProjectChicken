@@ -228,6 +228,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4706485486635175201, guid: bb03659500feb404aa886e7b36059cd8, type: 3}
+      propertyPath: m_TagString
+      value: BuckshotsParticles
+      objectReference: {fileID: 0}
     - target: {fileID: 5449074970130184572, guid: bb03659500feb404aa886e7b36059cd8, type: 3}
       propertyPath: m_Name
       value: ShotGunInHand
@@ -235,6 +239,18 @@ PrefabInstance:
     - target: {fileID: 5449074970130184572, guid: bb03659500feb404aa886e7b36059cd8, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899780368848282164, guid: bb03659500feb404aa886e7b36059cd8, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899780368848282164, guid: bb03659500feb404aa886e7b36059cd8, type: 3}
+      propertyPath: startDelay.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7899780368848282164, guid: bb03659500feb404aa886e7b36059cd8, type: 3}
+      propertyPath: InitialModule.startSpeed.scalar
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

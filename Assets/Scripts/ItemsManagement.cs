@@ -33,7 +33,7 @@ public class ItemsManagement : MonoBehaviour
             }
             if (item.tag == "Ammo")
             {
-                AmmoCount++;
+                AmmoCount+= 10;
             }
             Destroy(item);
         }

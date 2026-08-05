@@ -11,6 +11,7 @@ TagManager:
   - EndScreen
   - WinScreen
   - BurnExit
+  - BuckshotsParticles
   layers:
   - Default
   - TransparentFX
