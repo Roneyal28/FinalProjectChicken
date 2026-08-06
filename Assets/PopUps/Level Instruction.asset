@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75139452830ddf646a6c8670e9f4907d, type: 3}
   m_Name: Level Instruction
   m_EditorClassIdentifier: Assembly-CSharp::PopupData
-  message: Exit The Barn Before 6AM To Escape And Wake Up The Neighborhood
+  message: Exit The Barn Before 6AM To Escape And Wake Up The Farmer
   displayTime: 4
   fadeInDuration: 1
   fadeDuration: 1
