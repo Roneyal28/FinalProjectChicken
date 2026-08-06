@@ -21,6 +21,7 @@ public class PopUpManager : MonoBehaviour
    private RectTransform popupTextRect;
    private Vector2 defaultBackgroundSize;
    private Vector2 defaultTextSize;
+   private SoundFXManager soundFXManager;
 
    private void Awake()
    {
@@ -31,6 +32,7 @@ public class PopUpManager : MonoBehaviour
       }
 
       Instance = this;
+      soundFXManager = FindFirstObjectByType<SoundFXManager>();
 
       if (notificatonParent == null)
          notificatonParent = gameObject;
@@ -99,6 +101,7 @@ public class PopUpManager : MonoBehaviour
          PopupData popup = notificationQueue.Dequeue();
          notificatonText.text = popup.message;
          ApplyPopupSize(popup);
+         PlayPopupSound();
 
          notificationUICanvasGroup.interactable = false;
          notificationUICanvasGroup.blocksRaycasts = false;
@@ -137,6 +140,14 @@ public class PopUpManager : MonoBehaviour
       }
 
       displayRoutine = null;
+   }
+
+   private void PlayPopupSound()
+   {
+      if (soundFXManager == null)
+         soundFXManager = FindFirstObjectByType<SoundFXManager>();
+
+      soundFXManager?.PlayPopupSound();
    }
 
    private void ApplyPopupSize(PopupData popup)

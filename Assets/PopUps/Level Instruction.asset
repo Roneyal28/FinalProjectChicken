@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Level Instruction
   m_EditorClassIdentifier: Assembly-CSharp::PopupData
   message: Exit The Barn Before 6AM To Escape And Wake Up The Neighborhood
-  displayTime: 6
+  displayTime: 4
   fadeInDuration: 1
   fadeDuration: 1
   useCustomSize: 1
