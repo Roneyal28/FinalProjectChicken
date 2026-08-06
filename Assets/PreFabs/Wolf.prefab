@@ -315,8 +315,8 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 0
-  maxHealth: 100
-  currentHealth: 100
+  maxHealth: 150
+  currentHealth: 150
   damageParticles: {fileID: 8726546477245722076, guid: 2a1b8fb20459eb34b892fbf21d49090a, type: 3}
   idleStateName: WolfIdle
   walkStateName: WolfRun

@@ -1856,6 +1856,8 @@ MonoBehaviour:
   quitButtonClip: {fileID: 8300000, guid: 3879d1a1069f348f08f2f278ecc1f09f, type: 3}
   playHoverClip: {fileID: 8300000, guid: 9807e9ffb1dc54e5ca0a1eba0ab7be3e, type: 3}
   quitHoverClip: {fileID: 8300000, guid: 9807e9ffb1dc54e5ca0a1eba0ab7be3e, type: 3}
+  mainMenuBGM: {fileID: 8300000, guid: c3dfa121dca155c4aac1952d900aaa64, type: 3}
+  mainMenuBGMVolume: 0.5
   waitForSoundBeforeAction: 1
   fallbackDelaySeconds: 0.15
 --- !u!82 &1968334935

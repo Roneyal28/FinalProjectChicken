@@ -17,6 +17,8 @@ public class ShotgunFireReload : MonoBehaviour
     private ParticleSystemRenderer particleRenderer;
     private Transform particleEmitter;
     private SpriteRenderer shotgunSprite;
+    private SpriteRenderer wingSprite;
+    private Transform wingTransform;
     private Animator shotgunAnimator;
     private SoundFXManager soundFXManager;
     private ShotgunState state = ShotgunState.Hidden;
@@ -29,6 +31,11 @@ public class ShotgunFireReload : MonoBehaviour
     private Vector3 particleRightLocalEulerAngles = new Vector3(0f, 90f, 0f);
     private Vector3 particleLeftLocalEulerAngles = new Vector3(0f, -90f, 0f);
     private Vector2 lastAppliedShotgunOffset;
+    private Vector3 wingReferenceLocalPosition;
+    private bool wingReferenceFlipX;
+    private bool wingReferenceFacingLeft;
+    private bool wingVisibleAfterDraw = true;
+    private bool hiddenForChickenAnimation;
     private int particleDamage = 1;
     private int shotId;
 
@@ -39,6 +46,7 @@ public class ShotgunFireReload : MonoBehaviour
     {
         shotgunAnimator = GetComponent<Animator>();
         shotgunSprite = GetComponent<SpriteRenderer>();
+        FindWingSprite();
         buckshotParticles = GetComponentInChildren<ParticleSystem>(true);
         items = GetComponentInParent<ItemsManagement>();
         soundFXManager = FindFirstObjectByType<SoundFXManager>();
@@ -99,7 +107,7 @@ public class ShotgunFireReload : MonoBehaviour
     {
         UpdateAnimationState();
 
-        if (state != ShotgunState.Idle)
+        if (hiddenForChickenAnimation || state != ShotgunState.Idle)
             return;
 
         if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
@@ -116,8 +124,18 @@ public class ShotgunFireReload : MonoBehaviour
 
         oneInChamber = false;
         ResetAnimatorParameters();
-        PlayAnimation("DrawAnim");
-        state = ShotgunState.Drawing;
+        SetWingVisible(false);
+
+        if (shotgunAnimator != null)
+        {
+            PlayAnimation("DrawAnim");
+            state = ShotgunState.Drawing;
+        }
+        else
+        {
+            state = ShotgunState.Idle;
+            SetWingVisible(true);
+        }
 
         if (soundFXManager == null)
             soundFXManager = FindFirstObjectByType<SoundFXManager>();
@@ -131,10 +149,18 @@ public class ShotgunFireReload : MonoBehaviour
         ApplyFacing();
     }
 
+    public void SetChickenAnimationHidden(bool hidden)
+    {
+        hiddenForChickenAnimation = hidden;
+        RefreshWeaponVisibility();
+    }
+
     private void ApplyFacing()
     {
         if (shotgunSprite != null)
             shotgunSprite.flipX = facingLeft;
+
+        ApplyWingFacing();
 
         Vector3 shotgunPosition = transform.localPosition;
         shotgunPosition.x -= lastAppliedShotgunOffset.x;
@@ -191,11 +217,14 @@ public class ShotgunFireReload : MonoBehaviour
         if (state == ShotgunState.Drawing && currentState.IsName("IdleAnim"))
         {
             state = ShotgunState.Idle;
+            SetWingVisible(true);
             return;
         }
 
         if (shotgunAnimator.IsInTransition(0) || currentState.normalizedTime < 1f)
             return;
+
+        bool finishedDrawing = state == ShotgunState.Drawing;
 
         if (state == ShotgunState.Reloading)
             oneInChamber = true;
@@ -203,6 +232,55 @@ public class ShotgunFireReload : MonoBehaviour
         ResetAnimatorParameters();
         PlayAnimation("IdleAnim");
         state = ShotgunState.Idle;
+
+        if (finishedDrawing)
+            SetWingVisible(true);
+    }
+
+    private void FindWingSprite()
+    {
+        foreach (SpriteRenderer childSprite in GetComponentsInChildren<SpriteRenderer>(true))
+        {
+            if (childSprite == shotgunSprite)
+                continue;
+
+            wingSprite = childSprite;
+            wingTransform = childSprite.transform;
+            wingReferenceLocalPosition = wingTransform.localPosition;
+            wingReferenceFlipX = wingSprite.flipX;
+            wingReferenceFacingLeft = shotgunSprite != null && shotgunSprite.flipX;
+            break;
+        }
+    }
+
+    private void ApplyWingFacing()
+    {
+        if (wingSprite == null || wingTransform == null)
+            return;
+
+        bool mirrorFromPlacedDirection = facingLeft != wingReferenceFacingLeft;
+        wingSprite.flipX = mirrorFromPlacedDirection ? !wingReferenceFlipX : wingReferenceFlipX;
+
+        Vector3 wingPosition = wingReferenceLocalPosition;
+        if (mirrorFromPlacedDirection)
+            wingPosition.x = -wingPosition.x;
+
+        wingTransform.localPosition = wingPosition;
+    }
+
+    private void SetWingVisible(bool visible)
+    {
+        wingVisibleAfterDraw = visible;
+        RefreshWeaponVisibility();
+    }
+
+    private void RefreshWeaponVisibility()
+    {
+        if (shotgunSprite != null)
+            shotgunSprite.enabled = !hiddenForChickenAnimation;
+
+        if (wingSprite != null)
+            wingSprite.enabled = !hiddenForChickenAnimation && wingVisibleAfterDraw;
     }
 
     private void PlayAnimation(string stateName)

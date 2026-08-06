@@ -18,6 +18,9 @@ public class ItemsManagement : MonoBehaviour
     [Header("Shotgun Damage")]
     [SerializeField, Min(1)] private int shotgunParticleDamage = 1;
 
+    [Header("Pickup Notifications")]
+    [SerializeField] private PopupData shootingPopup;
+
     private GameObject wing;
     private GameObject item;
     bool canPickupItem = false;
@@ -57,6 +60,9 @@ public class ItemsManagement : MonoBehaviour
             {
                 shotgun.SetActive(true);
                 shotgunController.OnPickedUp();
+
+                if (PopUpManager.Instance != null)
+                    PopUpManager.Instance.Show(shootingPopup);
             }
             if (item.tag == "Ammo")
             {

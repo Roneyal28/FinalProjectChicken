@@ -20,11 +20,16 @@ public class MainMenuScript : MonoBehaviour
     public AudioClip playHoverClip;
     public AudioClip quitHoverClip;
 
+    [Header("Main Menu BGM")]
+    public AudioClip mainMenuBGM;
+    [Range(0f, 1f)] public float mainMenuBGMVolume = 0.5f;
+
     [Header("Timing")]
     public bool waitForSoundBeforeAction = true;
     public float fallbackDelaySeconds = 0.15f;
 
     private bool isTransitioning;
+    private AudioSource bgmSource;
 
     private void Awake()
     {
@@ -35,6 +40,13 @@ public class MainMenuScript : MonoBehaviour
 
         FindButtonsIfNeeded();
         HookHoverSounds();
+        StartMainMenuBGM();
+    }
+
+    private void Update()
+    {
+        if (bgmSource != null)
+            bgmSource.volume = mainMenuBGMVolume;
     }
 
     public void PlayGame()
@@ -111,6 +123,20 @@ public class MainMenuScript : MonoBehaviour
         };
         entry.callback.AddListener(_ => callback.Invoke());
         trigger.triggers.Add(entry);
+    }
+
+    private void StartMainMenuBGM()
+    {
+        if (mainMenuBGM == null)
+            return;
+
+        bgmSource = gameObject.AddComponent<AudioSource>();
+        bgmSource.clip = mainMenuBGM;
+        bgmSource.volume = mainMenuBGMVolume;
+        bgmSource.loop = true;
+        bgmSource.playOnAwake = false;
+        bgmSource.spatialBlend = 0f;
+        bgmSource.Play();
     }
 
     private IEnumerator PlaySoundThenRun(AudioClip clip, System.Action action)

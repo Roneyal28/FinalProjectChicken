@@ -32,6 +32,10 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip ratHit;
     public AudioClip ratDeath;
 
+    [Header("Barrel Sounds")]
+    public AudioClip barrelHit;
+    public AudioClip barrelBreak;
+
     [Header("Shotgun Animation Sounds")]
     public AudioClip shotgunDraw;
     public AudioClip shotgunReload;
@@ -62,6 +66,10 @@ public class SoundFXManager : MonoBehaviour
     [Range(0f, 1f)] public float takeDamageVolume3 = 1f;
     [Range(0f, 1f)] public float ratHitVolume = 1f;
     [Range(0f, 1f)] public float ratDeathVolume = 1f;
+
+    [Header("Barrel Volumes")]
+    [Range(0f, 1f)] public float barrelHitVolume = 1f;
+    [Range(0f, 1f)] public float barrelBreakVolume = 1f;
 
     [Header("Shotgun Volumes")]
     [Range(0f, 1f)] public float shotgunDrawVolume = 1f;
@@ -186,6 +194,16 @@ public class SoundFXManager : MonoBehaviour
         PlaySFXWithRandomPitch(clip, volume, shotgunShootMinPitch, shotgunShootMaxPitch);
     }
 
+    public void PlayBarrelHit()
+    {
+        PlaySFX(barrelHit, barrelHitVolume);
+    }
+
+    public void PlayBarrelBreak()
+    {
+        PlaySFX(barrelBreak, barrelBreakVolume);
+    }
+
     private void PlaySFXWithRandomPitch(AudioClip clip, float volume, float minimumPitch, float maximumPitch)
     {
         if (clip == null || SFXSource == null)
@@ -219,6 +237,8 @@ public class SoundFXManager : MonoBehaviour
         if (clip == takeDamage3) return takeDamageVolume3;
         if (clip == ratHit) return ratHitVolume;
         if (clip == ratDeath) return ratDeathVolume;
+        if (clip == barrelHit) return barrelHitVolume;
+        if (clip == barrelBreak) return barrelBreakVolume;
        
         return 1f;
     }

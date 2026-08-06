@@ -155,7 +155,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.33, y: 0.14}
+    oldSize: {x: 0.32, y: 0.14}
     newSize: {x: 0.33, y: 0.14}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -220,6 +220,6 @@ MonoBehaviour:
   deathAnimationDuration: 1
   enemyLayerName: Enemy
   playerLayerName: Player
-  maxHealth: 150
-  currentHealth: 150
+  maxHealth: 100
+  currentHealth: 100
   deathEffect: {fileID: 0}

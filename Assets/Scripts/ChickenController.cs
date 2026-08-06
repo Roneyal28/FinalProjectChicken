@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ChickenController : MonoBehaviour
@@ -121,7 +122,7 @@ public class ChickenController : MonoBehaviour
         CheckFloor();
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
-            currentHealth = Mathf.Clamp(currentHealth - 10, 0, maxHealth);
+            currentHealth = Mathf.Clamp(currentHealth , 0, maxHealth);
             UpdateHealthBar();
         }
         if (jumpPressed && CanJump())
@@ -255,15 +256,28 @@ public class ChickenController : MonoBehaviour
             return false;
         }
 
-        Collider2D[] hits = Physics2D.OverlapCircleAll(GetGroundCheckPosition(), groundCheckRadius);
-        foreach (Collider2D hit in hits)
+        Bounds bounds = chickenCollider.bounds;
+        Vector2 checkOrigin = new Vector2(bounds.center.x, bounds.min.y + 0.02f);
+        Vector2 checkSize = new Vector2(bounds.size.x * 0.7f, 0.05f);
+
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(
+            checkOrigin,
+            checkSize,
+            0f,
+            Vector2.down,
+            groundCheckRadius);
+
+        foreach (RaycastHit2D hit in hits)
         {
-            if (hit == chickenCollider || hit.isTrigger)
+            if (hit.collider == chickenCollider || hit.collider.isTrigger)
             {
                 continue;
             }
 
-            return true;
+            if (hit.normal.y > 0.5f)
+            {
+                return true;
+            }
         }
 
         return false;
@@ -415,6 +429,7 @@ public class ChickenController : MonoBehaviour
             if (Time.frameCount > hurtAnimationStartFrame && IsAnimationFinished("HurtAnimation"))
             {
                 hurtAnimationLocked = false;
+                RefreshShotgunAnimationVisibility();
                 PlayAnimationFromStart(moveInput != Vector2.zero ? "ChickenWalk" : "IdleAnimation");
             }
             else
@@ -430,6 +445,7 @@ public class ChickenController : MonoBehaviour
             if (Time.frameCount > jumpAnimationStartFrame && IsAnimationFinished("JumpAnimation"))
             {
                 jumpAnimationLocked = false;
+                RefreshShotgunAnimationVisibility();
             }
             else
             {
@@ -444,6 +460,7 @@ public class ChickenController : MonoBehaviour
             if (Time.frameCount > attackAnimationStartFrame && IsAnimationFinished("AttackAnimation"))
             {
                 attackAnimationLocked = false;
+                RefreshShotgunAnimationVisibility();
                 PlayAnimationFromStart(moveInput != Vector2.zero ? "ChickenWalk" : "IdleAnimation");
             }
             else
@@ -459,15 +476,32 @@ public class ChickenController : MonoBehaviour
     {
         jumpAnimationLocked = true;
         jumpAnimationStartFrame = Time.frameCount;
+        RefreshShotgunAnimationVisibility();
         PlayAnimationFromStart("JumpAnimation");
         SFXManager.PlaySFX(SFXManager.jump);
         SFXManager.PlaySFX(SFXManager.jump2);
+    }
+
+    private void RefreshShotgunAnimationVisibility()
+    {
+        if (shotgunSR == null)
+            return;
+
+        if (shotgunController == null)
+            shotgunController = shotgunSR.GetComponent<ShotgunFireReload>();
+
+        if (shotgunController != null)
+        {
+            bool shouldHide = jumpAnimationLocked || attackAnimationLocked || hurtAnimationLocked;
+            shotgunController.SetChickenAnimationHidden(shouldHide);
+        }
     }
 
     private void PlayAttackAnimation()
     {
         attackAnimationLocked = true;
         attackAnimationStartFrame = Time.frameCount;
+        RefreshShotgunAnimationVisibility();
         moveInput = Vector2.zero;
         currentMoveVelocity = Vector2.zero;
         chickenRB.linearVelocity = Vector2.zero;
@@ -522,6 +556,16 @@ public class ChickenController : MonoBehaviour
                 Vector2 attackDirection = (Vector2)wolf.transform.position - GetAttackCenter();
                 wolf.TakeDamage(attackDamage, attackDirection);
             }
+        }
+
+        Collider2D[] barrelHits = Physics2D.OverlapBoxAll(GetAttackCenter(), GetAttackSize(), 0f);
+        HashSet<BreakableBarrel> damagedBarrels = new HashSet<BreakableBarrel>();
+
+        foreach (Collider2D hit in barrelHits)
+        {
+            BreakableBarrel barrel = hit.GetComponentInParent<BreakableBarrel>();
+            if (barrel != null && damagedBarrels.Add(barrel))
+                barrel.TakeWingHit();
         }
     }
 
@@ -600,6 +644,7 @@ public class ChickenController : MonoBehaviour
         hurtAnimationStartFrame = Time.frameCount;
         jumpAnimationLocked = false;
         attackAnimationLocked = false;
+        RefreshShotgunAnimationVisibility();
         anim.SetBool(isWalking, false);
         PlayAnimationFromStart("HurtAnimation");
     }
@@ -679,11 +724,10 @@ public class ChickenController : MonoBehaviour
 
     public void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "BurnExit")
+        if (other.CompareTag("BurnExit"))
         {
-            endScreen.enabled = true;
-            winScreen.enabled = true;
-            Time.timeScale = 0;
+            Time.timeScale = 1f;
+            SceneManager.LoadScene("CutScene");
         }
     }
 }

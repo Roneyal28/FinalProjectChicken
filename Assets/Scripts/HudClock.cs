@@ -30,8 +30,14 @@ public class HudClock : MonoBehaviour
     [SerializeField] private Color outlineColor = Color.black;
     [SerializeField, Range(0f, 1f)] private float outlineWidth = 0.15f;
 
+    [Header("Notifications")]
+    [SerializeField] private PopupData timeRunningOutPopup;
+    [SerializeField, Range(0, 23)] private int warningHour = 4;
+    [SerializeField, Range(0, 59)] private int warningMinute;
+
     private float elapsedSeconds;
     private Color runtimeStartColor;
+    private bool timeWarningShown;
 
     public float Progress01 { get; private set; }
 
@@ -56,6 +62,8 @@ public class HudClock : MonoBehaviour
         FixTransparentDefaultColor(ref endColor, Color.red);
         FixTransparentDefaultColor(ref outlineColor, Color.black);
         outlineWidth = Mathf.Clamp01(outlineWidth);
+        warningHour = Mathf.Clamp(warningHour, 0, 23);
+        warningMinute = Mathf.Clamp(warningMinute, 0, 59);
     }
 
     private void Start()
@@ -64,10 +72,12 @@ public class HudClock : MonoBehaviour
         CaptureStartColor();
         UpdateClockProgress();
         UpdateClockText();
+        TryShowTimeWarning();
     }
 
     private void Update()
     {
+        float previousProgress = Progress01;
         float durationSeconds = GetDurationSeconds();
         elapsedSeconds += useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
 
@@ -82,11 +92,19 @@ public class HudClock : MonoBehaviour
 
         UpdateClockProgress();
         UpdateClockText();
+
+        if (loopWhenFinished && Progress01 < previousProgress)
+        {
+            timeWarningShown = false;
+        }
+
+        TryShowTimeWarning();
     }
 
     public void ResetClock()
     {
         elapsedSeconds = 0f;
+        timeWarningShown = false;
         UpdateClockProgress();
         UpdateClockText();
     }
@@ -169,6 +187,23 @@ public class HudClock : MonoBehaviour
 
         clockText.outlineColor = visibleOutlineColor;
         clockText.outlineWidth = outlineWidth;
+    }
+
+    private void TryShowTimeWarning()
+    {
+        if (timeWarningShown || timeRunningOutPopup == null)
+        {
+            return;
+        }
+
+        float warningProgress = GetProgressAtTime(warningHour, warningMinute);
+        if (Progress01 < warningProgress || PopUpManager.Instance == null)
+        {
+            return;
+        }
+
+        timeWarningShown = true;
+        PopUpManager.Instance.Show(timeRunningOutPopup);
     }
 
     private float GetDurationSeconds()
