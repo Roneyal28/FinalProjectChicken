@@ -13,6 +13,7 @@ public class ChickenController : MonoBehaviour
     private GameObject wing;
     private Vector3 wingOriginalPosition;
     private SpriteRenderer shotgunSR;
+    private ShotgunFireReload shotgunController;
    
    [SerializeField] private Canvas endScreen;
    [SerializeField] private Image winScreen;
@@ -649,21 +650,18 @@ public class ChickenController : MonoBehaviour
 
     public void FlipChicken(float x)
     {
-        if (x < 0)
+        bool facingLeft = x < 0;
+        chickenSR.flipX = facingLeft;
+
+        if (shotgunSR != null && shotgunSR.gameObject.activeSelf)
         {
-            chickenSR.flipX = true;
-            if(shotgunSR.gameObject.activeSelf)
-            {
-                shotgunSR.flipX = true;
-            }
-        }
-        else 
-        {
-            chickenSR.flipX = false;
-            if(shotgunSR.gameObject.activeSelf)
-            {
-                shotgunSR.flipX = false;
-            }
+            if (shotgunController == null)
+                shotgunController = shotgunSR.GetComponent<ShotgunFireReload>();
+
+            if (shotgunController != null)
+                shotgunController.SetFacingLeft(facingLeft);
+            else
+                shotgunSR.flipX = facingLeft;
         }
     }
 

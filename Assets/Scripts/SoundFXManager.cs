@@ -31,6 +31,11 @@ public class SoundFXManager : MonoBehaviour
     public AudioClip takeDamage3;
     public AudioClip ratHit;
     public AudioClip ratDeath;
+
+    [Header("Shotgun Animation Sounds")]
+    public AudioClip shotgunDraw;
+    public AudioClip shotgunReload;
+    public AudioClip shotgunShoot;
     
     
     
@@ -57,6 +62,17 @@ public class SoundFXManager : MonoBehaviour
     [Range(0f, 1f)] public float takeDamageVolume3 = 1f;
     [Range(0f, 1f)] public float ratHitVolume = 1f;
     [Range(0f, 1f)] public float ratDeathVolume = 1f;
+
+    [Header("Shotgun Volumes")]
+    [Range(0f, 1f)] public float shotgunDrawVolume = 1f;
+    [Range(0f, 1f)] public float shotgunReloadVolume = 1f;
+    [Range(0f, 1f)] public float shotgunShootVolume = 1f;
+
+    [Header("Shotgun Pitch Ranges")]
+    [Range(0.1f, 3f)] public float shotgunReloadMinPitch = 0.9f;
+    [Range(0.1f, 3f)] public float shotgunReloadMaxPitch = 1.1f;
+    [Range(0.1f, 3f)] public float shotgunShootMinPitch = 0.9f;
+    [Range(0.1f, 3f)] public float shotgunShootMaxPitch = 1.1f;
 
     [Header("Chicken Damage Pitch Ranges")]
     [Range(0.1f, 3f)] public float takeDamageMinPitch = 0.9f;
@@ -147,6 +163,38 @@ public class SoundFXManager : MonoBehaviour
         float maxPitch = Mathf.Max(minimumPitches[selectedIndex], maximumPitches[selectedIndex]);
         SFXSource.pitch = Random.Range(minPitch, maxPitch);
         SFXSource.PlayOneShot(clips[selectedIndex], volumes[selectedIndex]);
+    }
+
+    public void PlayShotgunDraw()
+    {
+        PlaySFX(shotgunDraw, shotgunDrawVolume);
+    }
+
+    public void PlayShotgunReload()
+    {
+        PlaySFXWithRandomPitch(
+            shotgunReload,
+            shotgunReloadVolume,
+            shotgunReloadMinPitch,
+            shotgunReloadMaxPitch);
+    }
+
+    public void PlayShotgunShoot()
+    {
+        AudioClip clip = shotgunShoot != null ? shotgunShoot : gunShooting;
+        float volume = shotgunShoot != null ? shotgunShootVolume : gunShootingVolume;
+        PlaySFXWithRandomPitch(clip, volume, shotgunShootMinPitch, shotgunShootMaxPitch);
+    }
+
+    private void PlaySFXWithRandomPitch(AudioClip clip, float volume, float minimumPitch, float maximumPitch)
+    {
+        if (clip == null || SFXSource == null)
+            return;
+
+        float minPitch = Mathf.Min(minimumPitch, maximumPitch);
+        float maxPitch = Mathf.Max(minimumPitch, maximumPitch);
+        SFXSource.pitch = Random.Range(minPitch, maxPitch);
+        SFXSource.PlayOneShot(clip, volume);
     }
 
     private float GetSFXVolume(AudioClip clip)

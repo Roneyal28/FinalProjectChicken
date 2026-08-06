@@ -1,20 +1,46 @@
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class ItemsManagement : MonoBehaviour
 {
+    [Header("Shotgun Positioning")]
+    [Tooltip("Extra local offset added while facing right. Animation movement is preserved.")]
+    [SerializeField] private Vector2 shotgunRightOffset = Vector2.zero;
+    [Tooltip("Extra local offset added while facing left. Animation movement is preserved.")]
+    [SerializeField] private Vector2 shotgunLeftOffset = Vector2.zero;
+
+    [Header("Shotgun Particle Emitter")]
+    [SerializeField] private Vector2 particleRightOffset = new Vector2(0.243f, 0.047f);
+    [SerializeField] private Vector2 particleLeftOffset = new Vector2(-0.243f, 0.047f);
+    [SerializeField] private Vector3 particleRightRotation = new Vector3(0f, 90f, 0f);
+    [SerializeField] private Vector3 particleLeftRotation = new Vector3(0f, -90f, 0f);
+
+    [Header("Shotgun Damage")]
+    [SerializeField, Min(1)] private int shotgunParticleDamage = 1;
+
     private GameObject wing;
     private GameObject item;
     bool canPickupItem = false;
     GameObject shotgun;
-    private Animator shotgunAnim;
+    private ShotgunFireReload shotgunController;
     private int ammoCount =0;
     void Awake()
     {
         wing = GameObject.FindGameObjectWithTag("Wing");
         shotgun = wing.GetComponentInChildren<SpriteRenderer>().gameObject;
-        shotgunAnim = shotgun.GetComponent<Animator>();
+        shotgunController = shotgun.GetComponent<ShotgunFireReload>();
+        if (shotgunController == null)
+            shotgunController = shotgun.AddComponent<ShotgunFireReload>();
+
+        shotgunController.Configure(
+            shotgunRightOffset,
+            shotgunLeftOffset,
+            particleRightOffset,
+            particleLeftOffset,
+            particleRightRotation,
+            particleLeftRotation,
+            shotgunParticleDamage);
+
         shotgun.SetActive(false);
     }
 
@@ -30,12 +56,15 @@ public class ItemsManagement : MonoBehaviour
             if (item.tag == "ShotGun")
             {
                 shotgun.SetActive(true);
+                shotgunController.OnPickedUp();
             }
             if (item.tag == "Ammo")
             {
                 AmmoCount+= 10;
             }
             Destroy(item);
+            item = null;
+            canPickupItem = false;
         }
     }
 
@@ -45,6 +74,15 @@ public class ItemsManagement : MonoBehaviour
         {
             canPickupItem = true;
             item = collision.gameObject;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject == item)
+        {
+            item = null;
+            canPickupItem = false;
         }
     }
     
