@@ -15,10 +15,7 @@ public class ChickenController : MonoBehaviour
     private Vector3 wingOriginalPosition;
     private SpriteRenderer shotgunSR;
     private ShotgunFireReload shotgunController;
-   
-   [SerializeField] private Canvas endScreen;
-   [SerializeField] private Image winScreen;
-
+    
     [Header("Movement")]
     [SerializeField] int Step = 1;
     [SerializeField] int speed = 5;
@@ -88,8 +85,6 @@ public class ChickenController : MonoBehaviour
 
     void Awake()
     {
-        endScreen.enabled = false;
-        winScreen.enabled = false;
         chickenSR = GetComponent<SpriteRenderer>();
         chickenRB = GetComponent<Rigidbody2D>();
         chickenCollider = GetComponent<Collider2D>();
@@ -724,7 +719,7 @@ public class ChickenController : MonoBehaviour
 
     public void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("BurnExit"))
+        if (other.CompareTag("BarnExit"))
         {
             Time.timeScale = 1f;
             SceneManager.LoadScene("CutScene");

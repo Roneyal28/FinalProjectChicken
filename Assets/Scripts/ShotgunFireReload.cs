@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-
+using UnityEngine.UI;
+using TMPro;
 public class ShotgunFireReload : MonoBehaviour
 {
     private enum ShotgunState
@@ -12,6 +13,7 @@ public class ShotgunFireReload : MonoBehaviour
         Firing
     }
 
+    
     private ItemsManagement items;
     private ParticleSystem buckshotParticles;
     private ParticleSystemRenderer particleRenderer;
@@ -22,7 +24,7 @@ public class ShotgunFireReload : MonoBehaviour
     private Animator shotgunAnimator;
     private SoundFXManager soundFXManager;
     private ShotgunState state = ShotgunState.Hidden;
-    private bool oneInChamber;
+    private bool inChamber;
     private bool facingLeft;
     private Vector2 rightShotgunOffset;
     private Vector2 leftShotgunOffset;
@@ -39,6 +41,13 @@ public class ShotgunFireReload : MonoBehaviour
     private int particleDamage = 1;
     private int shotId;
 
+    private int shells = 0;
+    
+    [Header("UI elements")] 
+    [SerializeField] private Image leftShell;
+    [SerializeField] private Image rightShell;
+    [SerializeField] private TextMeshProUGUI counter;
+    
     private static readonly int IsReloading = Animator.StringToHash("isReloading");
     private static readonly int IsFiring = Animator.StringToHash("isFiring");
 
@@ -110,6 +119,24 @@ public class ShotgunFireReload : MonoBehaviour
         if (hiddenForChickenAnimation || state != ShotgunState.Idle)
             return;
 
+        switch (shells)
+        {
+            case 0:
+                leftShell.enabled = false;
+                rightShell.enabled = false;
+                inChamber = false;
+                break;
+            case 1:
+                leftShell.enabled = true;
+                rightShell.enabled = false;
+                break;
+            case 2:
+                leftShell.enabled = true;
+                rightShell.enabled = true;
+                break;
+        }
+
+        counter.text = items.AmmoCount.ToString();
         if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
             TryReload();
         else if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
@@ -122,7 +149,7 @@ public class ShotgunFireReload : MonoBehaviour
         SpriteRenderer chickenSprite = chicken != null ? chicken.GetComponent<SpriteRenderer>() : null;
         SetFacingLeft(chickenSprite != null && chickenSprite.flipX);
 
-        oneInChamber = false;
+        inChamber = false;
         ResetAnimatorParameters();
         SetWingVisible(false);
 
@@ -184,27 +211,49 @@ public class ShotgunFireReload : MonoBehaviour
 
     private void TryReload()
     {
-        if (oneInChamber || items == null || items.AmmoCount <= 0)
+        if (shells ==2 || items == null || items.AmmoCount <= 0 && shells == 0)
             return;
 
-        items.AmmoCount--;
+       
         shotgunAnimator.SetBool(IsReloading, true);
         PlayAnimation("ReloadAnim");
         state = ShotgunState.Reloading;
         soundFXManager?.PlayShotgunReload();
+        
+        switch (items.AmmoCount)
+        {
+            case >1:
+                switch (shells)
+                {
+                    case 0: 
+                        items.AmmoCount-= 2;
+                        shells = Mathf.Clamp(shells +=2,0,2 );
+                        break;
+                    case 1:
+                        items.AmmoCount--;
+                        shells = Mathf.Clamp(shells +=1,0,2 );
+                        break;
+                }
+                break;
+            case 1:
+                items.AmmoCount--;
+                shells = Mathf.Clamp(shells +=1,0,2 );
+                break;
+        }
+        
     }
 
     private void TryFire()
     {
-        if (!oneInChamber)
+        if (!inChamber)
             return;
-
-        oneInChamber = false;
         shotgunAnimator.SetBool(IsFiring, true);
         PlayAnimation("FireAnim");
         state = ShotgunState.Firing;
         FireShotgun();
         soundFXManager?.PlayShotgunShoot();
+        shells--;
+
     }
 
     private void UpdateAnimationState()
@@ -227,7 +276,7 @@ public class ShotgunFireReload : MonoBehaviour
         bool finishedDrawing = state == ShotgunState.Drawing;
 
         if (state == ShotgunState.Reloading)
-            oneInChamber = true;
+            inChamber = true;
 
         ResetAnimatorParameters();
         PlayAnimation("IdleAnim");

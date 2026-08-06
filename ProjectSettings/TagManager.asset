@@ -10,8 +10,8 @@ TagManager:
   - Wing
   - EndScreen
   - WinScreen
-  - BurnExit
   - BuckshotsParticles
+  - BarnExit
   layers:
   - Default
   - TransparentFX

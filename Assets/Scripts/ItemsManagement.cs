@@ -1,5 +1,7 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class ItemsManagement : MonoBehaviour
 {
@@ -27,8 +29,19 @@ public class ItemsManagement : MonoBehaviour
     GameObject shotgun;
     private ShotgunFireReload shotgunController;
     private int ammoCount =0;
+
+    [Header("UI elements")] 
+    [SerializeField] private Image shotgunCounter;
+    [SerializeField] private Image leftShell;
+    [SerializeField] private Image rightShell;
+    [SerializeField] private TextMeshProUGUI counter;
+    
     void Awake()
     {
+        shotgunCounter.enabled = false;
+        leftShell.enabled = false;
+        rightShell.enabled = false;
+        counter.enabled = false;
         wing = GameObject.FindGameObjectWithTag("Wing");
         shotgun = wing.GetComponentInChildren<SpriteRenderer>().gameObject;
         shotgunController = shotgun.GetComponent<ShotgunFireReload>();
@@ -59,6 +72,7 @@ public class ItemsManagement : MonoBehaviour
             if (item.tag == "ShotGun")
             {
                 shotgun.SetActive(true);
+                shotgunCounter.enabled = true;
                 shotgunController.OnPickedUp();
 
                 if (PopUpManager.Instance != null)
@@ -67,6 +81,8 @@ public class ItemsManagement : MonoBehaviour
             if (item.tag == "Ammo")
             {
                 AmmoCount+= 10;
+                counter.enabled = true;
+                counter.text = AmmoCount.ToString();
             }
             Destroy(item);
             item = null;
