@@ -9,12 +9,26 @@ public class ChickenSoundsScripts : MonoBehaviour
 
     private void Awake()
     {
-        SFXManager = FindObjectOfType<SoundFXManager>().GetComponent<SoundFXManager>();
+        if (!isActiveAndEnabled)
+        {
+            return;
+        }
 
+        SFXManager = FindFirstObjectByType<SoundFXManager>();
     }
 
     public void PlayFootstep()
     {
+        if (SFXManager == null)
+        {
+            SFXManager = FindFirstObjectByType<SoundFXManager>();
+        }
+
+        if (SFXManager == null)
+        {
+            return;
+        }
+
         AudioClip clip = playFirstFootstep ? SFXManager.walkOnWood1 : SFXManager.walkOnWood2;
 
         SFXManager.PlaySFX(clip);

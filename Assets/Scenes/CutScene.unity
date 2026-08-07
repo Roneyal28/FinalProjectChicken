@@ -5865,7 +5865,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 792348552}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8dacf66c04121d1428b92da2966773af, type: 3}
   m_Name: 
@@ -11589,6 +11589,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2100188233}
   - component: {fileID: 2100188232}
+  - component: {fileID: 761254830200000001}
   m_Layer: 0
   m_Name: TimeLineWin
   m_TagString: Untagged
@@ -11640,6 +11641,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &761254830200000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2100188231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb63d7d0c8524ea69aa8489dc1f9fc48, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CutsceneEndLoader
+  mainMenuSceneName: MainMenu
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -103,6 +103,11 @@ public class ChickenController : MonoBehaviour
 
     void Awake()
     {
+        if (!isActiveAndEnabled)
+        {
+            return;
+        }
+
         chickenSR = GetComponent<SpriteRenderer>();
         chickenRB = GetComponent<Rigidbody2D>();
         chickenCollider = GetComponent<Collider2D>();
@@ -129,7 +134,7 @@ public class ChickenController : MonoBehaviour
 
         SetupHealthBar();
         MoveKinematicOnFloor();
-        SFXManager = FindObjectOfType<SoundFXManager>().GetComponent<SoundFXManager>();
+        SFXManager = FindFirstObjectByType<SoundFXManager>();
     }
 
     void Update()

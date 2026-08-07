@@ -40,6 +40,11 @@ public class ItemsManagement : MonoBehaviour
     [SerializeField] private Image doorKey;
     void Awake()
     {
+        if (!isActiveAndEnabled)
+        {
+            return;
+        }
+
         shotgunCounter.enabled = false;
         leftShell.enabled = false;
         rightShell.enabled = false;
