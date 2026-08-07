@@ -24,6 +24,9 @@ public class EnemyBehavior : MonoBehaviour
     [SerializeField] private float damageAnimationDuration = 0.35f;
     [SerializeField] private float deathAnimationDuration = 1f;
 
+    [Header("Shadow")]
+    [SerializeField] private Transform shadowCasterTransform;
+
     [Header("Collision")]
     [SerializeField] private string enemyLayerName = "Enemy";
     [SerializeField] private string playerLayerName = "Player";
@@ -49,6 +52,7 @@ public class EnemyBehavior : MonoBehaviour
     private bool isDead;
     private float damageTimer;
     private Color normalColor;
+    private float shadowCasterScaleX = 1f;
 
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
@@ -59,6 +63,16 @@ public class EnemyBehavior : MonoBehaviour
         enemyCollider = GetComponent<Collider2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        if (shadowCasterTransform == null)
+        {
+            shadowCasterTransform = transform.Find("Rat Shadow Caster");
+        }
+
+        if (shadowCasterTransform != null)
+        {
+            shadowCasterScaleX = Mathf.Abs(shadowCasterTransform.localScale.x);
+        }
+
         normalColor = spriteRenderer != null ? spriteRenderer.color : Color.white;
         SFXManager = FindObjectOfType<SoundFXManager>();
         startPosition = transform.position;
@@ -198,9 +212,18 @@ public class EnemyBehavior : MonoBehaviour
 
     private void FlipSprite()
     {
+        bool flipX = direction < 0;
+
         if (spriteRenderer != null)
         {
-            spriteRenderer.flipX = direction < 0;
+            spriteRenderer.flipX = flipX;
+        }
+
+        if (shadowCasterTransform != null)
+        {
+            Vector3 shadowScale = shadowCasterTransform.localScale;
+            shadowScale.x = flipX ? -shadowCasterScaleX : shadowCasterScaleX;
+            shadowCasterTransform.localScale = shadowScale;
         }
     }
 

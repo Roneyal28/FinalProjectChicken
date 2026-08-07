@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PressWASDText
   m_EditorClassIdentifier: Assembly-CSharp::PopupData
   message: Press W,A,S,D To Move
-  displayTime: 2
+  displayTime: 1
   fadeInDuration: 1
   fadeDuration: 1
   useCustomSize: 0

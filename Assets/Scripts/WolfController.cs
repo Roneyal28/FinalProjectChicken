@@ -43,6 +43,10 @@ public class WolfController : MonoBehaviour
     public AudioClip attackingSound;
     public AudioClip hitSound;
     public AudioClip deathSound;
+    [Range(0f, 1f)] public float walkingSoundVolume = 0.531f;
+    [Range(0f, 1f)] public float attackingSoundVolume = 0.531f;
+    [Range(0f, 1f)] public float hitSoundVolume = 0.531f;
+    [Range(0f, 1f)] public float deathSoundVolume = 0.531f;
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private bool useDirectionalAudio = true;
     [SerializeField] private float fullPanDistance = 8f;
@@ -52,6 +56,7 @@ public class WolfController : MonoBehaviour
     private Animator animator;
     private Collider2D wolfCollider;
     private Transform audioListenerTransform;
+    private AudioSource oneShotAudioSource;
     private Vector2 startPosition;
     private float actionTimer;
     private float attackTimer;
@@ -79,6 +84,8 @@ public class WolfController : MonoBehaviour
         {
             audioSource = GetComponent<AudioSource>();
         }
+
+        SetupOneShotAudioSource();
 
         CacheAnimatorStates();
         hitLayerIndex = animator != null ? animator.GetLayerIndex(hitLayerName) : -1;
@@ -233,14 +240,20 @@ public class WolfController : MonoBehaviour
             if (!audioSource.isPlaying || audioSource.clip != walkingSound)
             {
                 audioSource.clip = walkingSound;
+                audioSource.volume = walkingSoundVolume;
                 audioSource.loop = true;
                 audioSource.Play();
+            }
+            else
+            {
+                audioSource.volume = walkingSoundVolume;
             }
         }
         else if (audioSource.clip == walkingSound)
         {
             audioSource.Stop();
             audioSource.loop = false;
+            audioSource.volume = 1f;
         }
     }
 
@@ -302,7 +315,7 @@ public class WolfController : MonoBehaviour
     {
         if (audioSource != null && attackingSound != null)
         {
-            audioSource.PlayOneShot(attackingSound);
+            PlayOneShot(attackingSound, attackingSoundVolume);
         }
     }
 
@@ -323,7 +336,7 @@ public class WolfController : MonoBehaviour
 
         if (currentHealth > 0 && audioSource != null && hitSound != null)
         {
-            audioSource.PlayOneShot(hitSound);
+            PlayOneShot(hitSound, hitSoundVolume);
         }
 
         if (currentHealth == 0)
@@ -367,7 +380,7 @@ public class WolfController : MonoBehaviour
 
         if (audioSource != null && deathSound != null)
         {
-            audioSource.PlayOneShot(deathSound);
+            PlayOneShot(deathSound, deathSoundVolume);
         }
 
         float destroyDelay = deathSound != null
@@ -386,12 +399,21 @@ public class WolfController : MonoBehaviour
         if (!useDirectionalAudio || audioListenerTransform == null)
         {
             audioSource.panStereo = 0f;
+            if (oneShotAudioSource != null)
+            {
+                oneShotAudioSource.panStereo = 0f;
+            }
             return;
         }
 
         float safePanDistance = Mathf.Max(0.01f, fullPanDistance);
         float horizontalOffset = transform.position.x - audioListenerTransform.position.x;
-        audioSource.panStereo = Mathf.Clamp(horizontalOffset / safePanDistance, -1f, 1f);
+        float pan = Mathf.Clamp(horizontalOffset / safePanDistance, -1f, 1f);
+        audioSource.panStereo = pan;
+        if (oneShotAudioSource != null)
+        {
+            oneShotAudioSource.panStereo = pan;
+        }
     }
 
     private ChickenController FindChickenInRange()
@@ -460,7 +482,39 @@ public class WolfController : MonoBehaviour
         {
             audioSource.Stop();
             audioSource.loop = false;
+            audioSource.volume = 1f;
         }
+    }
+
+    private void PlayOneShot(AudioClip clip, float volume)
+    {
+        if (oneShotAudioSource == null || clip == null)
+        {
+            return;
+        }
+
+        oneShotAudioSource.PlayOneShot(clip, Mathf.Clamp01(volume));
+    }
+
+    private void SetupOneShotAudioSource()
+    {
+        oneShotAudioSource = gameObject.AddComponent<AudioSource>();
+        oneShotAudioSource.playOnAwake = false;
+        oneShotAudioSource.loop = false;
+        oneShotAudioSource.volume = 1f;
+
+        if (audioSource == null)
+        {
+            return;
+        }
+
+        oneShotAudioSource.outputAudioMixerGroup = audioSource.outputAudioMixerGroup;
+        oneShotAudioSource.pitch = audioSource.pitch;
+        oneShotAudioSource.spatialBlend = audioSource.spatialBlend;
+        oneShotAudioSource.dopplerLevel = audioSource.dopplerLevel;
+        oneShotAudioSource.rolloffMode = audioSource.rolloffMode;
+        oneShotAudioSource.minDistance = audioSource.minDistance;
+        oneShotAudioSource.maxDistance = audioSource.maxDistance;
     }
 
     private void SetupRigidbody()

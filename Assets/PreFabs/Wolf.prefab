@@ -204,7 +204,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.531
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -308,9 +308,9 @@ MonoBehaviour:
   minIdleTime: 0.4
   maxIdleTime: 1.2
   idleChance: 0.35
-  attackDamage: 20
+  attackDamage: 15
   attackRange: 1.2
-  attackDelay: 1
+  attackDelay: 0.8
   attackCooldown: 1.5
   playerLayer:
     serializedVersion: 2
@@ -329,6 +329,10 @@ MonoBehaviour:
   attackingSound: {fileID: 8300000, guid: ed3923d26f334fe4799c2fde22f79b1f, type: 3}
   hitSound: {fileID: 8300000, guid: 8f92ce0fb35b74ac59fe5235a233dae1, type: 3}
   deathSound: {fileID: 8300000, guid: 13040221bc1ca4be08fcb61eaf2df077, type: 3}
+  walkingSoundVolume: 0.2
+  attackingSoundVolume: 0.122
+  hitSoundVolume: 0.221
+  deathSoundVolume: 0.319
   audioSource: {fileID: 7639922755926036764}
   useDirectionalAudio: 1
   fullPanDistance: 8

@@ -28,6 +28,7 @@ public class ItemsManagement : MonoBehaviour
     bool canPickupItem = false;
     GameObject shotgun;
     private ShotgunFireReload shotgunController;
+    private SoundFXManager soundFXManager;
     private int ammoCount =0;
     [SerializeField] private bool hasKey = false;
 
@@ -59,6 +60,8 @@ public class ItemsManagement : MonoBehaviour
             particleLeftRotation,
             shotgunParticleDamage);
 
+        soundFXManager = FindFirstObjectByType<SoundFXManager>();
+
         shotgun.SetActive(false);
     }
 
@@ -79,6 +82,8 @@ public class ItemsManagement : MonoBehaviour
     {
         if (Keyboard.current.eKey.wasPressedThisFrame && canPickupItem && item != null)
         {
+            bool playKeyOrAmmoSound = false;
+
             if (item.CompareTag("ShotGun"))
             {
                 shotgun.SetActive(true);
@@ -93,11 +98,18 @@ public class ItemsManagement : MonoBehaviour
                 AmmoCount+= 10;
                 counter.enabled = true;
                 counter.text = AmmoCount.ToString();
+                playKeyOrAmmoSound = true;
             }
 
             if (item.CompareTag("key"))
             {
                 hasKey = true;
+                playKeyOrAmmoSound = true;
+            }
+
+            if (playKeyOrAmmoSound && soundFXManager != null)
+            {
+                soundFXManager.PlaySFX(soundFXManager.obtainItem);
             }
             Destroy(item);
             item = null;

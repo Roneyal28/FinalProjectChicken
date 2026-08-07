@@ -871,77 +871,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1041475302
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1041475305}
-  - component: {fileID: 1041475304}
-  - component: {fileID: 1041475303}
-  m_Layer: 0
-  m_Name: TimeLine
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1041475303
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1041475302}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb63d7d0c8524ea69aa8489dc1f9fc48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CutsceneEndLoader
-  mainMenuSceneName: MainMenu
---- !u!320 &1041475304
-PlayableDirector:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1041475302}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
-  m_InitialState: 1
-  m_WrapMode: 2
-  m_DirectorUpdateMode: 1
-  m_InitialTime: 0
-  m_SceneBindings:
-  - key: {fileID: 6367255170382743590, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
-    value: {fileID: 1489170840}
-  - key: {fileID: -8971986933163163719, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
-    value: {fileID: 1487043451}
-  - key: {fileID: -7482140177797023353, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
-    value: {fileID: 684707655}
-  - key: {fileID: -3708127165402875639, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
-    value: {fileID: 820761535}
-  m_ExposedReferences:
-    m_References: []
---- !u!4 &1041475305
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1041475302}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.96189, y: 3.91298, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1164484874
 GameObject:
   m_ObjectHideFlags: 0
@@ -1138,8 +1067,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Time Ran Out..... You Didn't Wake The Farmer Up In Time.....
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 752e6f29fc2b7430381cef91d4c649fd, type: 2}
-  m_sharedMaterial: {fileID: 1773212407041587865, guid: 752e6f29fc2b7430381cef91d4c649fd, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 563f7e80b33aaf34186e5579513976e7, type: 2}
+  m_sharedMaterial: {fileID: -3196649857798113762, guid: 563f7e80b33aaf34186e5579513976e7, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1314,13 +1243,92 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1489170838}
   m_CullTransparentMesh: 1
+--- !u!1 &1561895997
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1561896000}
+  - component: {fileID: 1561895999}
+  - component: {fileID: 1561895998}
+  m_Layer: 0
+  m_Name: DidntLeaveInTImeLine
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1561895998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1561895997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb63d7d0c8524ea69aa8489dc1f9fc48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CutsceneEndLoader
+  mainMenuSceneName: MainMenu
+--- !u!320 &1561895999
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1561895997}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
+  m_InitialState: 1
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings:
+  - key: {fileID: 6367255170382743590, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
+    value: {fileID: 1489170840}
+  - key: {fileID: -8971986933163163719, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
+    value: {fileID: 1487043451}
+  - key: {fileID: -7482140177797023353, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
+    value: {fileID: 684707655}
+  - key: {fileID: -3708127165402875639, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
+    value: {fileID: 820761535}
+  - key: {fileID: -2532464957010619485, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
+    value: {fileID: 1489170840}
+  - key: {fileID: 9192566784197544623, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
+    value: {fileID: 1487043451}
+  - key: {fileID: -5725294526211364061, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
+    value: {fileID: 684707655}
+  - key: {fileID: -7185200261568566040, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
+    value: {fileID: 820761535}
+  m_ExposedReferences:
+    m_References: []
+--- !u!4 &1561896000
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1561895997}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.96189, y: 3.91298, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 263556306}
   - {fileID: 970297422}
-  - {fileID: 1041475305}
+  - {fileID: 1561896000}
   - {fileID: 239149068}
   - {fileID: 1034642326}
   - {fileID: 1164484877}

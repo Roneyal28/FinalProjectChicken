@@ -8,6 +8,13 @@ public class SoundFXManager : MonoBehaviour
     [SerializeField] AudioSource musicSource;
     [SerializeField] AudioSource SFXSource;
     [SerializeField] AudioSource timerSource;
+
+    [Header("Timer Urgency")]
+    [SerializeField] private HudClock hudClock;
+    [SerializeField, Range(0, 23)] private int urgentTimerHour = 4;
+    [SerializeField, Range(0, 59)] private int urgentTimerMinute;
+    [SerializeField, Range(0.1f, 3f)] private float urgentTimerPitch = 1.5f;
+    [SerializeField, Range(0f, 1f)] private float urgentTimerVolumeBoost = 0.2f;
     
     [Header("Sounds")]
     public AudioClip bgm;
@@ -57,7 +64,7 @@ public class SoundFXManager : MonoBehaviour
     [Range(0f, 1f)] public float eatFoodVolume = 1f;
     [Range(0f, 1f)] public float wingAttackVolume = 1f;
     [Range(0f, 1f)] public float wingAttack2Volume = 1f;
-    [Range(0f, 1f)] public float obtainItemVolume = 1f;
+    [Range(0f, 1f)] public float obtainItemVolume = 0.3f;
     [Range(0f, 1f)] public float textVolume = 1f;
     [Range(0f, 1f)] public float cancelVolume = 1f;
     [Range(0f, 1f)] public float confirmVolume = 1f;
@@ -105,6 +112,11 @@ public class SoundFXManager : MonoBehaviour
 
     private void Start()
     {
+        if (hudClock == null)
+        {
+            hudClock = FindFirstObjectByType<HudClock>();
+        }
+
         musicSource.clip = bgm;
         musicSource.Play();
         PlayTimer();
@@ -112,10 +124,7 @@ public class SoundFXManager : MonoBehaviour
 
     private void Update()
     {
-        if (timerSource != null)
-        {
-            timerSource.volume = timerVolume;
-        }
+        UpdateTimerUrgency();
     }
 
     private void PlayTimer()
@@ -129,6 +138,21 @@ public class SoundFXManager : MonoBehaviour
         timerSource.volume = timerVolume;
         timerSource.loop = true;
         timerSource.Play();
+        UpdateTimerUrgency();
+    }
+
+    private void UpdateTimerUrgency()
+    {
+        if (timerSource == null)
+        {
+            return;
+        }
+
+        bool isUrgent = hudClock != null &&
+            hudClock.Progress01 >= hudClock.GetProgressAtTime(urgentTimerHour, urgentTimerMinute);
+
+        timerSource.pitch = isUrgent ? urgentTimerPitch : 1f;
+        timerSource.volume = Mathf.Clamp01(timerVolume + (isUrgent ? urgentTimerVolumeBoost : 0f));
     }
 
     public void PlaySFX(AudioClip clip)
@@ -223,7 +247,7 @@ public class SoundFXManager : MonoBehaviour
             popupSoundMaxPitch);
     }
 
-    private void PlaySFXWithRandomPitch(AudioClip clip, float volume, float minimumPitch, float maximumPitch)
+    public void PlaySFXWithRandomPitch(AudioClip clip, float volume, float minimumPitch, float maximumPitch)
     {
         if (clip == null || SFXSource == null)
             return;

@@ -13,6 +13,7 @@ TagManager:
   - BuckshotsParticles
   - BarnExit
   - key
+  - Ladder
   layers:
   - Default
   - TransparentFX

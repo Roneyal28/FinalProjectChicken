@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class HudClock : MonoBehaviour
 {
@@ -35,9 +36,13 @@ public class HudClock : MonoBehaviour
     [SerializeField, Range(0, 23)] private int warningHour = 4;
     [SerializeField, Range(0, 59)] private int warningMinute;
 
+    [Header("Time Expired Scene")]
+    [SerializeField] private string timeExpiredSceneName = "DidntLeaveInTime";
+
     private float elapsedSeconds;
     private Color runtimeStartColor;
     private bool timeWarningShown;
+    private bool timeExpiredSceneLoaded;
 
     public float Progress01 { get; private set; }
 
@@ -99,12 +104,14 @@ public class HudClock : MonoBehaviour
         }
 
         TryShowTimeWarning();
+        TryLoadTimeExpiredScene();
     }
 
     public void ResetClock()
     {
         elapsedSeconds = 0f;
         timeWarningShown = false;
+        timeExpiredSceneLoaded = false;
         UpdateClockProgress();
         UpdateClockText();
     }
@@ -204,6 +211,18 @@ public class HudClock : MonoBehaviour
 
         timeWarningShown = true;
         PopUpManager.Instance.Show(timeRunningOutPopup);
+    }
+
+    private void TryLoadTimeExpiredScene()
+    {
+        if (timeExpiredSceneLoaded || loopWhenFinished || Progress01 < 1f)
+        {
+            return;
+        }
+
+        timeExpiredSceneLoaded = true;
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(timeExpiredSceneName);
     }
 
     private float GetDurationSeconds()

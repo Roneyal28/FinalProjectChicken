@@ -6,7 +6,10 @@ public class PopupTrigger : MonoBehaviour
    [SerializeField] private PopupData popup;
    [SerializeField] private bool showOnlyOnce = true;
 
+
    private bool hasShown;
+   private ItemsManagement itemsManagement;
+
 
    private void Reset()
    {
@@ -26,6 +29,22 @@ public class PopupTrigger : MonoBehaviour
       if (!other.CompareTag("Player") || (showOnlyOnce && hasShown))
          return;
 
+      bool requiresMissingKey = popup != null && popup.showOnlyWithoutKey;
+
+      if (itemsManagement == null)
+         itemsManagement = other.GetComponentInParent<ItemsManagement>();
+
+      if (itemsManagement == null)
+         itemsManagement = FindFirstObjectByType<ItemsManagement>();
+
+      if (requiresMissingKey && itemsManagement != null && itemsManagement.HasKey)
+      {
+         if (showOnlyOnce)
+            hasShown = true;
+
+         return;
+      }
+
       if (PopUpManager.Instance == null)
       {
          Debug.LogError("No active PopUpManager was found in the scene.", this);
@@ -33,6 +52,6 @@ public class PopupTrigger : MonoBehaviour
       }
 
       hasShown = true;
-      PopUpManager.Instance.Show(popup);
+      PopUpManager.Instance.Show(popup, requiresMissingKey);
    }
 }

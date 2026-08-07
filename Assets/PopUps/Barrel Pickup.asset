@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Barrel Pickup
   m_EditorClassIdentifier: Assembly-CSharp::PopupData
   message: Press E to Pickup an Item
-  displayTime: 2
+  displayTime: 1
   fadeInDuration: 1
   fadeDuration: 1
   useCustomSize: 0

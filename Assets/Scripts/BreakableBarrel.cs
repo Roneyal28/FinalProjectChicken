@@ -10,7 +10,7 @@ public class BreakableBarrel : MonoBehaviour
     [SerializeField] private Sprite brokenSprite;
 
     [Header("Hidden Pickups")]
-    [Tooltip("Shotgun and ammo inside this radius are hidden until the barrel breaks.")]
+    [Tooltip("Shotgun, ammo, and keys inside this radius are hidden until the barrel breaks.")]
     [SerializeField, Min(0.1f)] private float pickupSearchRadius = 2f;
     [SerializeField] private PopupData pickupPopup;
 
@@ -63,7 +63,9 @@ public class BreakableBarrel : MonoBehaviour
         foreach (Collider2D nearbyCollider in nearbyColliders)
         {
             GameObject nearbyObject = nearbyCollider.gameObject;
-            if (!nearbyObject.CompareTag("ShotGun") && !nearbyObject.CompareTag("Ammo"))
+            if (!nearbyObject.CompareTag("ShotGun") &&
+                !nearbyObject.CompareTag("Ammo") &&
+                !nearbyObject.CompareTag("key"))
                 continue;
 
             if (foundPickups.Add(nearbyObject))

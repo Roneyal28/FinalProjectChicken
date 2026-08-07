@@ -477,8 +477,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2115244554}
   - {fileID: 199540866}
+  - {fileID: 2115244554}
   m_Father: {fileID: 633099431}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -636,7 +636,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_Sprite: {fileID: 8204627532864337075, guid: 779ad7e21776e4481820a4442e32df54, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -657,13 +657,13 @@ Transform:
   m_GameObject: {fileID: 942712105}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.1, y: 2.84, z: 0}
+  m_LocalPosition: {x: -12, y: -2.29, z: 0}
   m_LocalScale: {x: 7.02, y: 7.02, z: 7.02}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1188731627
+--- !u!1 &1422472905
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -671,69 +671,69 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1188731630}
-  - component: {fileID: 1188731629}
-  - component: {fileID: 1188731628}
+  - component: {fileID: 1422472907}
+  - component: {fileID: 1422472906}
+  - component: {fileID: 1422472908}
   m_Layer: 0
-  m_Name: TimeLine
+  m_Name: DiedToWolfTimeLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1188731628
+--- !u!320 &1422472906
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422472905}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: 7cbce4a449771404d9edb6a098c23433, type: 2}
+  m_InitialState: 1
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings:
+  - key: {fileID: -9153559742397563000, guid: 7cbce4a449771404d9edb6a098c23433, type: 2}
+    value: {fileID: 2115244551}
+  - key: {fileID: 5089797908821986492, guid: 7cbce4a449771404d9edb6a098c23433, type: 2}
+    value: {fileID: 199540869}
+  - key: {fileID: -1019926977024331474, guid: 7cbce4a449771404d9edb6a098c23433, type: 2}
+    value: {fileID: 2088841374}
+  - key: {fileID: 3681805919901032031, guid: 7cbce4a449771404d9edb6a098c23433, type: 2}
+    value: {fileID: 2088841374}
+  m_ExposedReferences:
+    m_References: []
+--- !u!4 &1422472907
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422472905}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7.76649, y: -9.27973, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1422472908
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1188731627}
+  m_GameObject: {fileID: 1422472905}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bb63d7d0c8524ea69aa8489dc1f9fc48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CutsceneEndLoader
   mainMenuSceneName: MainMenu
---- !u!320 &1188731629
-PlayableDirector:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1188731627}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
-  m_InitialState: 1
-  m_WrapMode: 2
-  m_DirectorUpdateMode: 1
-  m_InitialTime: 0
-  m_SceneBindings:
-  - key: {fileID: -5725294526211364061, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
-    value: {fileID: 942712106}
-  - key: {fileID: -7185200261568566040, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
-    value: {fileID: 942712106}
-  - key: {fileID: 9192566784197544623, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
-    value: {fileID: 199540869}
-  - key: {fileID: -2532464957010619485, guid: f6c8e000eb45d0c4f9cd36b508612d1b, type: 2}
-    value: {fileID: 2115244551}
-  m_ExposedReferences:
-    m_References: []
---- !u!4 &1188731630
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1188731627}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.96189, y: 3.91298, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2088841373
 GameObject:
   m_ObjectHideFlags: 0
@@ -821,7 +821,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_MaskInteraction: 0
   m_Sprite: {fileID: 8204627532864337075, guid: 779ad7e21776e4481820a4442e32df54, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -842,7 +842,7 @@ Transform:
   m_GameObject: {fileID: 2088841373}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -18.27, y: -1.96, z: 0}
+  m_LocalPosition: {x: -10.01, y: 2.88, z: 0}
   m_LocalScale: {x: 7.02, y: 7.02, z: 7.02}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -911,8 +911,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: You DIED !! ...... Don't Let The Wolves Get You Next Time
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 752e6f29fc2b7430381cef91d4c649fd, type: 2}
-  m_sharedMaterial: {fileID: 1773212407041587865, guid: 752e6f29fc2b7430381cef91d4c649fd, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 563f7e80b33aaf34186e5579513976e7, type: 2}
+  m_sharedMaterial: {fileID: -3196649857798113762, guid: 563f7e80b33aaf34186e5579513976e7, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1013,7 +1013,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 633099431}
-  - {fileID: 1188731630}
   - {fileID: 942712108}
   - {fileID: 2088841376}
   - {fileID: 457471554}
+  - {fileID: 1422472907}

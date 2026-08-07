@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -33,6 +34,10 @@ public class ChickenController : MonoBehaviour
     [SerializeField] Vector2 minKinematicPosition = new Vector2(-38f, -10.7f);
     [SerializeField] Vector2 maxKinematicPosition = new Vector2(38f, -2.7f);
 
+    [Header("Ladder")]
+    [SerializeField] private string ladderTag = "Ladder";
+    [SerializeField] private float ladderClimbSpeed = 4f;
+
     [Header("Jump")]
     [SerializeField] private float jumpForce = 7f;
     [SerializeField] Transform groundCheck;
@@ -46,6 +51,11 @@ public class ChickenController : MonoBehaviour
     [SerializeField] private HealthBar healthBar;
     [SerializeField] private ParticleSystem damageParticles;
 
+    [Header("Death Scene")]
+    [SerializeField] private string wolfDeathSceneName = "YouDiedWolf";
+    [SerializeField] private string deathAnimationStateName = "DieAnimation";
+    [SerializeField] private float deathSceneDelay = 2f;
+
     [Header("Attack")]
     [SerializeField] private int attackDamage = 50;
     [SerializeField] private float attackRange = 1.2f;
@@ -55,6 +65,8 @@ public class ChickenController : MonoBehaviour
     SoundFXManager SFXManager;
 
     private Collider2D chickenCollider;
+    private readonly List<Collider2D> ladderColliders = new List<Collider2D>();
+    private readonly List<Renderer> ladderRenderers = new List<Renderer>();
     private float startingGravityScale;
     private Vector2 moveInput;
     private Vector2 currentMoveVelocity;
@@ -70,6 +82,7 @@ public class ChickenController : MonoBehaviour
     private int attackAnimationStartFrame;
     private bool hurtAnimationLocked;
     private int hurtAnimationStartFrame;
+    private bool deathSceneLoaded;
     private string isWalking = "isWalking";
 
     public int CurrentHealth => currentHealth;
@@ -96,6 +109,7 @@ public class ChickenController : MonoBehaviour
         anim = GetComponent<Animator>();
         FindKinematicWalkingArea();
         FindDynamicMovementArea();
+        FindLadders();
         wing = GameObject.FindGameObjectWithTag("Wing");
         wingOriginalPosition = wing.transform.position;
         shotgunSR= wing.GetComponentInChildren<SpriteRenderer>();
@@ -120,6 +134,11 @@ public class ChickenController : MonoBehaviour
 
     void Update()
     {
+        if (deathSceneLoaded)
+        {
+            return;
+        }
+
         ReadInput();
         CheckFloor();
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
@@ -143,7 +162,19 @@ public class ChickenController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (deathSceneLoaded)
+        {
+            return;
+        }
+
         CheckFloor();
+        if (IsOnLadder())
+        {
+            MoveOnLadder();
+            jumpPressed = false;
+            return;
+        }
+
         bool isInsideKinematicArea = IsInsideKinematicWalkingArea();
         bool isInsideDynamicArea = IsInsideDynamicMovementArea();
 
@@ -587,6 +618,26 @@ public class ChickenController : MonoBehaviour
         }
     }
 
+    private void MoveOnLadder()
+    {
+        useGravityMode = false;
+        chickenRB.bodyType = RigidbodyType2D.Kinematic;
+        chickenRB.gravityScale = 0f;
+        chickenRB.linearVelocity = Vector2.zero;
+
+        UpdateSmoothedMovement();
+
+        if (currentMoveVelocity.x != 0f)
+        {
+            FlipChicken(currentMoveVelocity.x);
+        }
+
+        Vector2 climbVelocity = new Vector2(
+            currentMoveVelocity.x * Step * speed,
+            currentMoveVelocity.y * ladderClimbSpeed);
+        chickenRB.MovePosition(chickenRB.position + climbVelocity * Time.fixedDeltaTime);
+    }
+
     private bool IsInsideDynamicMovementArea()
     {
         if (dynamicMovementArea == null || !dynamicMovementArea.enabled)
@@ -615,6 +666,70 @@ public class ChickenController : MonoBehaviour
                 return;
             }
         }
+    }
+
+    private void FindLadders()
+    {
+        ladderColliders.Clear();
+        ladderRenderers.Clear();
+
+        foreach (GameObject ladder in GameObject.FindGameObjectsWithTag(ladderTag))
+        {
+            Collider2D ladderCollider = ladder.GetComponent<Collider2D>();
+            if (ladderCollider == null)
+            {
+                ladderCollider = ladder.GetComponentInChildren<Collider2D>();
+            }
+
+            if (ladderCollider != null)
+            {
+                ladderCollider.isTrigger = true;
+                ladderColliders.Add(ladderCollider);
+            }
+
+            Renderer ladderRenderer = ladder.GetComponent<Renderer>();
+            if (ladderRenderer == null)
+            {
+                ladderRenderer = ladder.GetComponentInChildren<Renderer>();
+            }
+
+            if (ladderRenderer != null)
+            {
+                ladderRenderers.Add(ladderRenderer);
+            }
+        }
+    }
+
+    private bool IsOnLadder()
+    {
+        if (chickenCollider == null)
+        {
+            return false;
+        }
+
+        foreach (Collider2D ladderCollider in ladderColliders)
+        {
+            if (ladderCollider != null &&
+                ladderCollider.enabled &&
+                ladderCollider.gameObject.activeInHierarchy &&
+                Physics2D.Distance(chickenCollider, ladderCollider).isOverlapped)
+            {
+                return true;
+            }
+        }
+
+        foreach (Renderer ladderRenderer in ladderRenderers)
+        {
+            if (ladderRenderer != null &&
+                ladderRenderer.enabled &&
+                ladderRenderer.gameObject.activeInHierarchy &&
+                chickenCollider.bounds.Intersects(ladderRenderer.bounds))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private Vector2 GetMinBorder()
@@ -829,6 +944,11 @@ public class ChickenController : MonoBehaviour
 
     public void TakeDamage(int damage, Vector2 attackDirection)
     {
+        if (deathSceneLoaded)
+        {
+            return;
+        }
+
         int previousHealth = currentHealth;
         currentHealth = Mathf.Clamp(currentHealth - damage, 0, maxHealth);
 
@@ -908,7 +1028,56 @@ public class ChickenController : MonoBehaviour
 
     private void Die()
     {
-        gameObject.SetActive(false);
+        if (deathSceneLoaded)
+        {
+            return;
+        }
+
+        deathSceneLoaded = true;
+        StartCoroutine(PlayDeathAndLoadScene());
+    }
+
+    private IEnumerator PlayDeathAndLoadScene()
+    {
+        moveInput = Vector2.zero;
+        jumpPressed = false;
+        attackPressed = false;
+
+        HudClock hudClock = FindFirstObjectByType<HudClock>();
+        if (hudClock != null)
+        {
+            hudClock.enabled = false;
+        }
+
+        if (chickenRB != null)
+        {
+            chickenRB.linearVelocity = Vector2.zero;
+            chickenRB.simulated = false;
+        }
+
+        if (chickenCollider != null)
+        {
+            chickenCollider.enabled = false;
+        }
+
+        GameObject shotgunObject = shotgunSR != null ? shotgunSR.gameObject : null;
+        if (shotgunObject != null)
+        {
+            Destroy(shotgunObject);
+        }
+
+        if (wing != null && wing != shotgunObject)
+        {
+            Destroy(wing);
+        }
+
+        if (anim != null)
+        {
+            PlayAnimationFromStart(deathAnimationStateName);
+        }
+
+        yield return new WaitForSeconds(Mathf.Max(0f, deathSceneDelay));
+        SceneManager.LoadScene(wolfDeathSceneName);
     }
 
     public void FlipChicken(float x)

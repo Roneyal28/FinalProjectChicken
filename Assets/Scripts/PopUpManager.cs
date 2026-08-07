@@ -5,6 +5,18 @@ using UnityEngine;
 
 public class PopUpManager : MonoBehaviour
 {
+   private readonly struct PopupRequest
+   {
+      public readonly PopupData Popup;
+      public readonly bool ShowOnlyWithoutKey;
+
+      public PopupRequest(PopupData popup, bool showOnlyWithoutKey)
+      {
+         Popup = popup;
+         ShowOnlyWithoutKey = showOnlyWithoutKey;
+      }
+   }
+
    public static PopUpManager Instance { get; private set; }
 
    [Header("Popup UI")]
@@ -15,13 +27,15 @@ public class PopUpManager : MonoBehaviour
    [Tooltip("The image RectTransform behind the text. Found automatically when left empty.")]
    [SerializeField] private RectTransform popupBackground;
 
-   private readonly Queue<PopupData> notificationQueue = new Queue<PopupData>();
+   private readonly Queue<PopupRequest> notificationQueue = new Queue<PopupRequest>();
    private CanvasGroup notificationUICanvasGroup;
    private Coroutine displayRoutine;
    private RectTransform popupTextRect;
    private Vector2 defaultBackgroundSize;
    private Vector2 defaultTextSize;
    private SoundFXManager soundFXManager;
+
+
 
    private void Awake()
    {
@@ -66,6 +80,7 @@ public class PopUpManager : MonoBehaviour
          notificationUICanvasGroup = notificatonParent.AddComponent<CanvasGroup>();
 
       SetVisible(false);
+
    }
 
    private void OnDestroy()
@@ -74,7 +89,7 @@ public class PopUpManager : MonoBehaviour
          Instance = null;
    }
 
-   public void Show(PopupData popup)
+   public void Show(PopupData popup, bool showOnlyWithoutKey = false)
    {
       if (popup == null)
       {
@@ -88,7 +103,8 @@ public class PopUpManager : MonoBehaviour
          return;
       }
 
-      notificationQueue.Enqueue(popup);
+      bool requiresMissingKey = showOnlyWithoutKey || popup.showOnlyWithoutKey;
+      notificationQueue.Enqueue(new PopupRequest(popup, requiresMissingKey));
 
       if (displayRoutine == null)
          displayRoutine = StartCoroutine(DisplayQueue());
@@ -98,7 +114,11 @@ public class PopUpManager : MonoBehaviour
    {
       while (notificationQueue.Count > 0)
       {
-         PopupData popup = notificationQueue.Dequeue();
+         PopupRequest request = notificationQueue.Dequeue();
+         if (request.ShowOnlyWithoutKey && PlayerHasKey())
+            continue;
+
+         PopupData popup = request.Popup;
          notificatonText.text = popup.message;
          ApplyPopupSize(popup);
          PlayPopupSound();
@@ -140,6 +160,12 @@ public class PopUpManager : MonoBehaviour
       }
 
       displayRoutine = null;
+   }
+
+   private static bool PlayerHasKey()
+   {
+      ItemsManagement itemsManagement = FindFirstObjectByType<ItemsManagement>();
+      return itemsManagement != null && itemsManagement.HasKey;
    }
 
    private void PlayPopupSound()

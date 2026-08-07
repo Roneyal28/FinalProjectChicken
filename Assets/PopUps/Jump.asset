@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Jump
   m_EditorClassIdentifier: Assembly-CSharp::PopupData
   message: Press Space To Jump
-  displayTime: 2
+  displayTime: 1
   fadeInDuration: 1
   fadeDuration: 1
   useCustomSize: 0
