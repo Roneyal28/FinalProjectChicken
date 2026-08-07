@@ -103,13 +103,13 @@ TextureImporter:
       name: Sleep_Z_Frame_1_0
       rect:
         serializedVersion: 2
-        x: 508
-        y: 498
-        width: 237
-        height: 287
+        x: 0
+        y: 0
+        width: 1254
+        height: 1254
       alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 2, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 30db23902606e80419c066717ea83973
     internalID: 0
     vertices: []
     indices: 

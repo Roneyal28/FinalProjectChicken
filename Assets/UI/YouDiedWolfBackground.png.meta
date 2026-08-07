@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 67b391e5eaa1e7d46ab11cb0e3a613be
+guid: c7bb44a4e557e794fb7b7f6758d21b23
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8418553323022767762
-    second: Sleep_Z_Frame_2_0
-  - first:
-      213: 247230742750952852
-    second: Sleep_Z_Frame_2_1
+      213: 6006626795074292761
+    second: YouDiedWolfBackground_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -103,45 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Sleep_Z_Frame_2_0
+      name: YouDiedWolfBackground_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1254
-        height: 1254
+        width: 1920
+        height: 1080
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e692b8a2b5a4b2b80800000000000000
-      internalID: -8418553323022767762
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Sleep_Z_Frame_2_1
-      rect:
-        serializedVersion: 2
-        x: 680
-        y: 636
-        width: 134
-        height: 154
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 49df937fc075e6300800000000000000
-      internalID: 247230742750952852
+      spriteID: 91c0fb2ee33db5350800000000000000
+      internalID: 6006626795074292761
       vertices: []
       indices: 
       edges: []
@@ -150,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 3abd87e163106ae479d21fe45d86eadb
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -160,8 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Sleep_Z_Frame_2_0: -8418553323022767762
-      Sleep_Z_Frame_2_1: 247230742750952852
+      YouDiedWolfBackground_0: 6006626795074292761
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
