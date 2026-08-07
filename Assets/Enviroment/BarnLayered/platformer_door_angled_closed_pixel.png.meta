@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 91423b48b351949ff94b53fec75f9471
+guid: 2bc5e958efbd3df4a85d9492ac93d779
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -663500977322533501
-    second: beam_railing_segment_0
+      213: -235690983465343555
+    second: platformer_door_angled_closed_pixel_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,13 +46,13 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 0
-  alignment: 4
-  spritePivot: {x: 0, y: 0.5}
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 25, y: 0, z: 20, w: 0}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -100,23 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: beam_railing_segment_0
+      name: platformer_door_angled_closed_pixel_0
       rect:
         serializedVersion: 2
-        x: 15
-        y: 15
-        width: 558
-        height: 180
-      alignment: 4
-      pivot: {x: 0, y: 0.5}
+        x: 3
+        y: 3
+        width: 266
+        height: 414
+      alignment: 0
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 38dd0926065cac6f0800000000000000
-      internalID: -663500977322533501
+      spriteID: db529cd9c48aabcf0800000000000000
+      internalID: -235690983465343555
       vertices: []
       indices: 
       edges: []
@@ -125,8 +125,8 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: c45e4477b022f419d859fba2f17aaf14
-    internalID: -1904255055
+    spriteID: 
+    internalID: 0
     vertices: []
     indices: 
     edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      beam_railing_segment_0: -663500977322533501
+      platformer_door_angled_closed_pixel_0: -235690983465343555
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

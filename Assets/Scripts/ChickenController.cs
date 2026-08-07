@@ -26,6 +26,10 @@ public class ChickenController : MonoBehaviour
 
     [Header("Kinematic Borders")]
     [SerializeField] bool useKinematicBorders = true;
+    [SerializeField] private PolygonCollider2D kinematicWalkingArea;
+    [SerializeField] private PolygonCollider2D dynamicMovementArea;
+    [Range(0.5f, 1f)]
+    [SerializeField] private float kinematicColliderCheckScale = 0.75f;
     [SerializeField] Vector2 minKinematicPosition = new Vector2(-38f, -10.7f);
     [SerializeField] Vector2 maxKinematicPosition = new Vector2(38f, -2.7f);
 
@@ -58,6 +62,7 @@ public class ChickenController : MonoBehaviour
     private bool attackPressed;
     private bool useGravityMode;
     private bool isJumping;
+    private bool jumpConsumed;
     private float jumpStartY;
     private bool jumpAnimationLocked;
     private int jumpAnimationStartFrame;
@@ -89,6 +94,8 @@ public class ChickenController : MonoBehaviour
         chickenRB = GetComponent<Rigidbody2D>();
         chickenCollider = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
+        FindKinematicWalkingArea();
+        FindDynamicMovementArea();
         wing = GameObject.FindGameObjectWithTag("Wing");
         wingOriginalPosition = wing.transform.position;
         shotgunSR= wing.GetComponentInChildren<SpriteRenderer>();
@@ -137,8 +144,10 @@ public class ChickenController : MonoBehaviour
     void FixedUpdate()
     {
         CheckFloor();
+        bool isInsideKinematicArea = IsInsideKinematicWalkingArea();
+        bool isInsideDynamicArea = IsInsideDynamicMovementArea();
 
-        if (!isOnFloor)
+        if (!isOnFloor || !isInsideKinematicArea || isInsideDynamicArea)
         {
             StartGravityMode();
         }
@@ -163,7 +172,7 @@ public class ChickenController : MonoBehaviour
             Gizmos.DrawWireSphere(GetGroundCheckPosition(), groundCheckRadius);
         }
 
-        if (useKinematicBorders)
+        if (useKinematicBorders && kinematicWalkingArea == null)
         {
             Vector2 min = GetMinBorder();
             Vector2 max = GetMaxBorder();
@@ -291,13 +300,14 @@ public class ChickenController : MonoBehaviour
 
     private bool CanJump()
     {
-        return isOnFloor || isGrounded;
+        return !jumpConsumed && (isOnFloor || isGrounded);
     }
 
     private void Jump()
     {
         StartGravityMode();
         isJumping = true;
+        jumpConsumed = true;
         jumpStartY = chickenRB.position.y;
         chickenRB.linearVelocity = new Vector2(currentMoveVelocity.x * Step * speed, jumpForce);
     }
@@ -316,7 +326,7 @@ public class ChickenController : MonoBehaviour
         }
 
         Vector2 movement = currentMoveVelocity * Step * speed * Time.fixedDeltaTime;
-        Vector2 nextPosition = ClampToKinematicBorders(chickenRB.position + movement);
+        Vector2 nextPosition = ResolveKinematicMovement(chickenRB.position, movement);
         chickenRB.MovePosition(nextPosition);
     }
 
@@ -336,22 +346,32 @@ public class ChickenController : MonoBehaviour
 
         bool landedFromJump = isJumping &&
             isOnFloor &&
+            IsInsideKinematicWalkingArea() &&
             chickenRB.linearVelocity.y <= 0f &&
             chickenRB.position.y <= jumpStartY;
 
         bool landedAfterFalling = !isJumping &&
             isOnFloor &&
+            IsInsideKinematicWalkingArea() &&
             chickenRB.linearVelocity.y <= 0.05f;
 
-        bool landedOnSolidFloor = isOnFloor &&
-            isGrounded &&
+        bool landedOnSolidFloor = isGrounded &&
             chickenRB.linearVelocity.y <= 0.05f;
 
         if (landedFromJump || landedAfterFalling || landedOnSolidFloor)
         {
             isJumping = false;
-            useGravityMode = false;
-            chickenRB.linearVelocity = Vector2.zero;
+            jumpConsumed = false;
+
+            bool canReturnToKinematic = isOnFloor &&
+                IsInsideKinematicWalkingArea() &&
+                !IsInsideDynamicMovementArea();
+
+            if (canReturnToKinematic)
+            {
+                useGravityMode = false;
+                chickenRB.linearVelocity = Vector2.zero;
+            }
         }
     }
 
@@ -392,6 +412,209 @@ public class ChickenController : MonoBehaviour
             Mathf.Clamp(position.x, min.x, max.x),
             Mathf.Clamp(position.y, min.y, max.y)
         );
+    }
+
+    private Vector2 ResolveKinematicMovement(Vector2 currentPosition, Vector2 movement)
+    {
+        if (!useKinematicBorders)
+        {
+            return currentPosition + movement;
+        }
+
+        if (kinematicWalkingArea == null || !kinematicWalkingArea.enabled)
+        {
+            return ClampToKinematicBorders(currentPosition + movement);
+        }
+
+        int totalSamplePoints = 9;
+        int currentInsideCount = CountChickenSamplePointsInsideAt(currentPosition);
+        Vector2 fullMovement = currentPosition + movement;
+        int fullMovementInsideCount = CountChickenSamplePointsInsideAt(fullMovement);
+
+        if (fullMovementInsideCount == totalSamplePoints)
+        {
+            return fullMovement;
+        }
+
+        // While entering from outside, allow movement that brings more of the chicken
+        // inside the polygon. Once fully inside, the same edge becomes a wall.
+        if (currentInsideCount < totalSamplePoints && fullMovementInsideCount >= currentInsideCount)
+        {
+            return fullMovement;
+        }
+
+        // Try each axis first for stable movement along horizontal and vertical edges.
+        Vector2 resolvedPosition = currentPosition;
+        Vector2 horizontalPosition = resolvedPosition + new Vector2(movement.x, 0f);
+        if (CanMoveToKinematicPosition(horizontalPosition, currentInsideCount, totalSamplePoints))
+        {
+            resolvedPosition = horizontalPosition;
+        }
+
+        Vector2 verticalPosition = resolvedPosition + new Vector2(0f, movement.y);
+        if (CanMoveToKinematicPosition(verticalPosition, currentInsideCount, totalSamplePoints))
+        {
+            resolvedPosition = verticalPosition;
+        }
+
+        if (resolvedPosition != currentPosition)
+        {
+            return resolvedPosition;
+        }
+
+        // For sloped polygon edges, remove the component pushing into the wall and
+        // keep the tangential component. This produces much smoother wall sliding.
+        Vector2 inwardNormal = GetInwardBoundaryNormal(fullMovement);
+        if (inwardNormal.sqrMagnitude > 0.0001f)
+        {
+            Vector2 tangent = new Vector2(-inwardNormal.y, inwardNormal.x);
+            Vector2 slideMovement = tangent * Vector2.Dot(movement, tangent);
+            float inwardAmount = Mathf.Max(0f, Vector2.Dot(movement, inwardNormal));
+            slideMovement += inwardNormal * inwardAmount;
+
+            for (int step = 10; step >= 1; step--)
+            {
+                Vector2 slidePosition = currentPosition + slideMovement * (step / 10f);
+                if (CanMoveToKinematicPosition(slidePosition, currentInsideCount, totalSamplePoints))
+                {
+                    return slidePosition;
+                }
+            }
+        }
+
+        return resolvedPosition;
+    }
+
+    private bool CanMoveToKinematicPosition(Vector2 position, int currentInsideCount, int totalSamplePoints)
+    {
+        int candidateInsideCount = CountChickenSamplePointsInsideAt(position);
+        return candidateInsideCount == totalSamplePoints ||
+            (currentInsideCount < totalSamplePoints && candidateInsideCount >= currentInsideCount);
+    }
+
+    private bool IsChickenColliderInsideAreaAt(Vector2 rigidbodyPosition)
+    {
+        return CountChickenSamplePointsInsideAt(rigidbodyPosition) == 9;
+    }
+
+    private int CountChickenSamplePointsInsideAt(Vector2 rigidbodyPosition)
+    {
+        if (kinematicWalkingArea == null || chickenCollider == null)
+        {
+            return 9;
+        }
+
+        Vector2[] points = GetChickenSamplePointsAt(rigidbodyPosition);
+        int insideCount = 0;
+
+        foreach (Vector2 point in points)
+        {
+            if (kinematicWalkingArea.OverlapPoint(point))
+            {
+                insideCount++;
+            }
+        }
+
+        return insideCount;
+    }
+
+    private Vector2[] GetChickenSamplePointsAt(Vector2 rigidbodyPosition)
+    {
+
+        Vector2 positionOffset = rigidbodyPosition - chickenRB.position;
+        Bounds bounds = chickenCollider.bounds;
+        Vector2 center = (Vector2)bounds.center + positionOffset;
+        Vector2 extents = (Vector2)bounds.extents * kinematicColliderCheckScale;
+
+        return new Vector2[]
+        {
+            center,
+            center + new Vector2(-extents.x, -extents.y),
+            center + new Vector2(-extents.x, extents.y),
+            center + new Vector2(extents.x, -extents.y),
+            center + new Vector2(extents.x, extents.y),
+            center + new Vector2(-extents.x, 0f),
+            center + new Vector2(extents.x, 0f),
+            center + new Vector2(0f, -extents.y),
+            center + new Vector2(0f, extents.y)
+        };
+    }
+
+    private Vector2 GetInwardBoundaryNormal(Vector2 rigidbodyPosition)
+    {
+        Vector2 correction = Vector2.zero;
+
+        foreach (Vector2 point in GetChickenSamplePointsAt(rigidbodyPosition))
+        {
+            if (!kinematicWalkingArea.OverlapPoint(point))
+            {
+                correction += kinematicWalkingArea.ClosestPoint(point) - point;
+            }
+        }
+
+        return correction.sqrMagnitude > 0.0001f
+            ? correction.normalized
+            : Vector2.zero;
+    }
+
+    private bool IsInsideKinematicWalkingArea()
+    {
+        if (kinematicWalkingArea == null || !kinematicWalkingArea.enabled)
+        {
+            return true;
+        }
+
+        Vector2 center = chickenCollider != null
+            ? chickenCollider.bounds.center
+            : chickenRB.position;
+        return kinematicWalkingArea.OverlapPoint(center);
+    }
+
+    private void FindKinematicWalkingArea()
+    {
+        if (kinematicWalkingArea != null)
+        {
+            return;
+        }
+
+        foreach (PolygonCollider2D polygon in FindObjectsOfType<PolygonCollider2D>())
+        {
+            if (polygon.gameObject.name.Equals("walkableArea Kinematic", StringComparison.OrdinalIgnoreCase))
+            {
+                kinematicWalkingArea = polygon;
+                return;
+            }
+        }
+    }
+
+    private bool IsInsideDynamicMovementArea()
+    {
+        if (dynamicMovementArea == null || !dynamicMovementArea.enabled)
+        {
+            return false;
+        }
+
+        Vector2 center = chickenCollider != null
+            ? chickenCollider.bounds.center
+            : chickenRB.position;
+        return dynamicMovementArea.OverlapPoint(center);
+    }
+
+    private void FindDynamicMovementArea()
+    {
+        if (dynamicMovementArea != null)
+        {
+            return;
+        }
+
+        foreach (PolygonCollider2D polygon in FindObjectsOfType<PolygonCollider2D>())
+        {
+            if (polygon.gameObject.name.Equals("DynamicMovementArea", StringComparison.OrdinalIgnoreCase))
+            {
+                dynamicMovementArea = polygon;
+                return;
+            }
+        }
     }
 
     private Vector2 GetMinBorder()
