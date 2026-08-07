@@ -29,19 +29,21 @@ public class ItemsManagement : MonoBehaviour
     GameObject shotgun;
     private ShotgunFireReload shotgunController;
     private int ammoCount =0;
+    [SerializeField] private bool hasKey = false;
 
     [Header("UI elements")] 
     [SerializeField] private Image shotgunCounter;
     [SerializeField] private Image leftShell;
     [SerializeField] private Image rightShell;
     [SerializeField] private TextMeshProUGUI counter;
-    
+    [SerializeField] private Image doorKey;
     void Awake()
     {
         shotgunCounter.enabled = false;
         leftShell.enabled = false;
         rightShell.enabled = false;
         counter.enabled = false;
+        doorKey.enabled = false;
         wing = GameObject.FindGameObjectWithTag("Wing");
         shotgun = wing.GetComponentInChildren<SpriteRenderer>().gameObject;
         shotgunController = shotgun.GetComponent<ShotgunFireReload>();
@@ -63,13 +65,21 @@ public class ItemsManagement : MonoBehaviour
     void Update()
     {
         PickUp();
+        if (hasKey)
+        {
+            doorKey.enabled = true;
+        }
+        else
+        {
+            doorKey.enabled = false;
+        }
     }
 
     private void PickUp()
     {
         if (Keyboard.current.eKey.wasPressedThisFrame && canPickupItem && item != null)
         {
-            if (item.tag == "ShotGun")
+            if (item.CompareTag("ShotGun"))
             {
                 shotgun.SetActive(true);
                 shotgunCounter.enabled = true;
@@ -78,11 +88,16 @@ public class ItemsManagement : MonoBehaviour
                 if (PopUpManager.Instance != null)
                     PopUpManager.Instance.Show(shootingPopup);
             }
-            if (item.tag == "Ammo")
+            if (item.CompareTag("Ammo"))
             {
                 AmmoCount+= 10;
                 counter.enabled = true;
                 counter.text = AmmoCount.ToString();
+            }
+
+            if (item.CompareTag("key"))
+            {
+                hasKey = true;
             }
             Destroy(item);
             item = null;
@@ -92,7 +107,7 @@ public class ItemsManagement : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.tag == "ShotGun" || collision.tag == "Ammo")
+        if (collision.CompareTag("ShotGun") || collision.CompareTag("Ammo") || collision.CompareTag("key"))
         {
             canPickupItem = true;
             item = collision.gameObject;
@@ -112,5 +127,10 @@ public class ItemsManagement : MonoBehaviour
     {
         get { return ammoCount; }
         set { ammoCount = value; }
+    }
+    public  bool HasKey
+    {
+        get { return hasKey; }
+        set { hasKey = value; }
     }
 }
